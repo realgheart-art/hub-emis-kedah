@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pusat Rujukan Guru Data — EMIS Kedah</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0d1f38">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EMIS Kedah">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d1f38; --navy-2:#14304f; --navy-3:#1d3f63;
+  --brass:#c2a15e; --brass-2:#d8bd85; --brass-deep:#9a7a3f;
+  --cream:#f5efe2; --paper:#fbf8f1; --paper-2:#f2ecdd;
+  --ink:#20293a; --ink-soft:#4b5568; --muted:#77808f;
+  --line:#e4ddcb; --line-strong:#d3c9b0;
+  --ok:#3f7d54; --warn:#b8863a; --danger:#a8492f;
+  --shadow:0 1px 2px rgba(13,31,56,.05), 0 8px 30px rgba(13,31,56,.07);
+  --shadow-lg:0 20px 60px rgba(13,31,56,.18);
+  --r:16px; --r-sm:11px;
+  --wrap:1080px;
+  --disp:'Fraunces',Georgia,serif;
+  --body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::selection{background:var(--brass);color:var(--navy)}
+
+.brand .logo{width:40px;height:40px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1.5px rgba(194,161,94,.55),0 2px 10px rgba(0,0,0,.35);flex-shrink:0;background:#0d1f38}
+.foot .logo{width:58px;height:58px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1.5px rgba(194,161,94,.5);flex-shrink:0;background:#0d1f38}
+/* ---------- Top bar ---------- */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(13,31,56,.94);backdrop-filter:blur(10px);border-bottom:1px solid rgba(194,161,94,.28)}
+.topbar-in{max-width:var(--wrap);margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:11px;cursor:pointer;flex-shrink:0}
+.brand .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(150deg,var(--brass-2),var(--brass-deep));display:grid;place-items:center;color:var(--navy);font-family:var(--disp);font-weight:700;font-size:17px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.brand .txt{color:var(--cream);line-height:1.1}
+.brand .txt b{font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.2px;display:block}
+.brand .txt span{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--brass-2);opacity:.9}
+.top-search{margin-left:auto;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(194,161,94,.3);color:var(--cream);padding:8px 13px;border-radius:999px;font-size:13.5px;transition:.2s;min-width:44px}
+.top-search:hover{background:rgba(255,255,255,.14);border-color:var(--brass)}
+.top-search svg{width:16px;height:16px;stroke:var(--brass-2);flex-shrink:0}
+.top-search span{opacity:.8}
+.top-search kbd{margin-left:6px;font-family:var(--mono);font-size:10px;background:rgba(255,255,255,.12);padding:2px 6px;border-radius:5px;border:1px solid rgba(255,255,255,.15)}
+@media(max-width:680px){.top-search span,.top-search kbd{display:none}.top-search{padding:9px}}
+
+/* ---------- Layout ---------- */
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+.view{display:none;animation:fade .4s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- Hero ---------- */
+.hero{background:
+   radial-gradient(120% 120% at 85% -10%, rgba(194,161,94,.16), transparent 55%),
+   radial-gradient(90% 90% at 0% 0%, rgba(29,63,99,.55), transparent 60%),
+   var(--navy);
+   color:var(--cream);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(194,161,94,.05) 1px,transparent 1px);background-size:100% 34px;opacity:.5;pointer-events:none}
+.hero-in{max-width:var(--wrap);margin:0 auto;padding:60px 20px 66px;position:relative;z-index:1}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--brass-2);margin-bottom:22px;font-weight:600}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--brass)}
+.hero h1{font-family:var(--disp);font-weight:600;font-size:clamp(31px,6vw,54px);line-height:1.04;letter-spacing:-.5px;max-width:16ch}
+.hero h1 em{font-style:italic;color:var(--brass-2)}
+.hero p.lead{margin-top:20px;font-size:clamp(15px,2.4vw,18px);max-width:56ch;color:rgba(245,239,226,.82)}
+.hero-meta{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+.hero-meta .tag{font-size:12px;padding:6px 13px;border-radius:999px;border:1px solid rgba(194,161,94,.4);color:var(--brass-2);background:rgba(194,161,94,.08)}
+
+/* focus-now strip */
+.now{margin-top:34px;background:rgba(251,248,241,.06);border:1px solid rgba(194,161,94,.32);border-radius:var(--r);padding:18px 20px;display:flex;gap:18px;align-items:flex-start;cursor:pointer;transition:.2s}
+.now:hover{background:rgba(251,248,241,.1);border-color:var(--brass)}
+.now .cal{flex-shrink:0;width:56px;text-align:center;border-radius:10px;overflow:hidden;border:1px solid rgba(194,161,94,.4)}
+.now .cal .m{background:var(--brass);color:var(--navy);font-weight:700;font-size:11px;letter-spacing:1px;padding:3px 0;text-transform:uppercase}
+.now .cal .d{padding:6px 0 5px;font-family:var(--disp);font-size:22px;font-weight:600;color:var(--cream)}
+.now .body{flex:1;min-width:0}
+.now .body .lbl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--brass-2);font-weight:600}
+.now .body h3{font-family:var(--disp);font-weight:600;font-size:19px;margin:2px 0 6px;color:var(--cream)}
+.now .body p{font-size:13.5px;color:rgba(245,239,226,.78);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.now .go{align-self:center;color:var(--brass-2);flex-shrink:0}
+.now .go svg{width:20px;height:20px}
+@media(max-width:560px){.now .go{display:none}}
+
+/* ---------- Section titling ---------- */
+.sec-head{margin:52px 0 22px}
+.sec-head .kick{font-size:11.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--brass-deep);font-weight:700}
+.sec-head h2{font-family:var(--disp);font-weight:600;font-size:clamp(23px,4vw,30px);letter-spacing:-.3px;margin-top:6px;color:var(--navy)}
+.sec-head p{color:var(--ink-soft);margin-top:5px;font-size:14.5px;max-width:60ch}
+
+/* ---------- Pillars ---------- */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:820px){.pillars{grid-template-columns:1fr}}
+.pillar{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px 22px;cursor:pointer;transition:.22s;overflow:hidden;display:flex;flex-direction:column;min-height:220px}
+.pillar::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--brass),var(--brass-deep));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.pillar:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--line-strong)}
+.pillar:hover::before{transform:scaleX(1)}
+.pillar .num{font-family:var(--disp);font-size:13px;color:var(--brass-deep);font-weight:600}
+.pillar .ic{width:44px;height:44px;border-radius:11px;background:var(--navy);display:grid;place-items:center;margin:14px 0 16px}
+.pillar .ic svg{width:22px;height:22px;stroke:var(--brass-2)}
+.pillar h3{font-family:var(--disp);font-weight:600;font-size:21px;color:var(--navy);line-height:1.15}
+.pillar p{color:var(--ink-soft);font-size:13.5px;margin-top:9px;flex:1}
+.pillar .foot{margin-top:16px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy-2)}
+.pillar .foot svg{width:16px;height:16px;transition:transform .2s}
+.pillar:hover .foot svg{transform:translateX(4px)}
+.pillar .cnt{position:absolute;top:24px;right:22px;font-size:11.5px;color:var(--muted);font-weight:600}
+
+/* mini facts */
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+@media(max-width:820px){.facts{grid-template-columns:repeat(2,1fr)}}
+.fact{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 16px 14px}
+.fact b{font-family:var(--disp);font-size:22px;color:var(--navy);font-weight:600;display:block;line-height:1}
+.fact span{font-size:12px;color:var(--ink-soft);display:block;margin-top:7px;line-height:1.35}
+
+/* ---------- Sub view header ---------- */
+.subhead{background:var(--navy);color:var(--cream);position:relative;overflow:hidden}
+.subhead::after{content:"";position:absolute;inset:0;background:radial-gradient(90% 120% at 100% 0,rgba(194,161,94,.14),transparent 55%)}
+.subhead-in{max-width:var(--wrap);margin:0 auto;padding:26px 20px 30px;position:relative;z-index:1}
+.crumb{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--brass-2);cursor:pointer;margin-bottom:14px;border:1px solid rgba(194,161,94,.32);padding:6px 12px;border-radius:999px;transition:.2s}
+.crumb:hover{background:rgba(194,161,94,.12)}
+.crumb svg{width:14px;height:14px}
+.subhead h1{font-family:var(--disp);font-weight:600;font-size:clamp(25px,4.5vw,36px);letter-spacing:-.3px}
+.subhead p{color:rgba(245,239,226,.8);margin-top:8px;font-size:14.5px;max-width:64ch}
+
+/* tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:20px}
+.tab{font-size:13px;font-weight:600;padding:9px 15px;border-radius:999px;color:rgba(245,239,226,.7);border:1px solid rgba(194,161,94,.25);transition:.18s;white-space:nowrap}
+.tab:hover{color:var(--cream);border-color:var(--brass)}
+.tab.active{background:var(--brass);color:var(--navy);border-color:var(--brass)}
+
+/* ---------- Content cards ---------- */
+.content{padding:32px 0 70px}
+.panel{display:none}
+.panel.active{display:block;animation:fade .35s ease}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card h3{font-family:var(--disp);font-weight:600;font-size:19px;color:var(--navy);margin-bottom:10px}
+.card h4{font-family:var(--disp);font-weight:600;font-size:16px;color:var(--navy-2);margin:16px 0 8px}
+.card p{color:var(--ink-soft);font-size:14.5px;margin-bottom:10px}
+.card p:last-child{margin-bottom:0}
+.prose-list{list-style:none;margin:6px 0}
+.prose-list li{position:relative;padding-left:22px;font-size:14px;color:var(--ink-soft);margin-bottom:9px;line-height:1.5}
+.prose-list li::before{content:"";position:absolute;left:2px;top:9px;width:7px;height:7px;border-radius:2px;background:var(--brass);transform:rotate(45deg)}
+.prose-list li b{color:var(--ink);font-weight:600}
+.callout{border-left:3px solid var(--brass);background:var(--paper-2);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:14px 18px;margin:14px 0;font-size:13.5px;color:var(--ink-soft)}
+.callout b{color:var(--navy)}
+
+/* role level selector */
+.levelbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.lvl{font-size:13px;font-weight:600;padding:10px 16px;border-radius:var(--r-sm);background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);transition:.18s}
+.lvl:hover{border-color:var(--brass)}
+.lvl.active{background:var(--navy);color:var(--cream);border-color:var(--navy)}
+.lvl .s{display:block;font-size:10.5px;font-weight:500;opacity:.7;margin-top:1px}
+
+.role{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.role.spot{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass),var(--shadow)}
+.role-head{padding:16px 20px;display:flex;align-items:center;gap:12px;background:linear-gradient(var(--paper-2),var(--paper))}
+.role.spot .role-head{background:linear-gradient(120deg,rgba(194,161,94,.18),var(--paper))}
+.role-head .tag{flex-shrink:0;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--brass-deep)}
+.role-head h4{font-family:var(--disp);font-weight:600;font-size:17px;color:var(--navy);flex:1}
+.role-head .star{color:var(--brass);font-size:12px;font-weight:700;background:rgba(194,161,94,.15);padding:3px 9px;border-radius:999px;border:1px solid var(--brass)}
+.role-body{padding:6px 20px 18px}
+
+/* ---------- Flow / verification cycle ---------- */
+.flow{background:var(--navy);border-radius:var(--r);padding:30px 24px;color:var(--cream);position:relative;overflow:hidden}
+.flow::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(194,161,94,.05) 1px,transparent 1px);background-size:100% 30px;opacity:.5}
+.flow-title{position:relative;z-index:1;text-align:center;margin-bottom:24px}
+.flow-title span{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--brass-2);font-weight:600}
+.flow-title h3{font-family:var(--disp);font-weight:600;font-size:21px;color:var(--cream);margin-top:5px}
+.steps{position:relative;z-index:1;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:16px;align-items:stretch}
+.step .rail{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:38px}
+.step .dot{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-family:var(--disp);font-weight:600;font-size:15px;flex-shrink:0;border:1.5px solid var(--brass);color:var(--brass-2);background:rgba(194,161,94,.08)}
+.step.decision .dot{border-radius:9px;transform:rotate(45deg);background:rgba(194,161,94,.16)}
+.step.decision .dot span{transform:rotate(-45deg)}
+.step.terminal .dot{background:var(--brass);color:var(--navy);border-color:var(--brass)}
+.step .line{width:2px;flex:1;background:linear-gradient(rgba(194,161,94,.5),rgba(194,161,94,.5));min-height:14px;margin:2px 0}
+.step:last-child .line{display:none}
+.step .txt{padding:5px 0 18px}
+.step:last-child .txt{padding-bottom:0}
+.step .txt b{font-size:14.5px;color:var(--cream);font-weight:600;display:block}
+.step .txt small{font-size:12.5px;color:rgba(245,239,226,.7);display:block;margin-top:2px}
+.step .loop{font-size:11px;color:var(--brass-2);margin-top:5px;display:inline-flex;align-items:center;gap:5px;border:1px dashed rgba(194,161,94,.4);padding:3px 9px;border-radius:999px}
+.step .loop svg{width:12px;height:12px}
+
+/* ---------- Committee chart ---------- */
+.orgnote{font-size:12.5px;color:var(--muted);margin:4px 0 16px;font-style:italic}
+.org{display:flex;flex-direction:column;align-items:center;gap:0}
+.org .node{background:var(--navy);color:var(--cream);border-radius:10px;padding:11px 18px;text-align:center;min-width:160px;position:relative;border:1px solid var(--navy-3)}
+.org .node.gold{background:linear-gradient(140deg,var(--brass-2),var(--brass-deep));color:var(--navy);border-color:var(--brass)}
+.org .node.ghost{background:var(--paper);color:var(--navy);border:1px dashed var(--line-strong)}
+.org .node .r{font-size:10px;letter-spacing:1px;text-transform:uppercase;opacity:.75;font-weight:600}
+.org .node .n{font-family:var(--disp);font-weight:600;font-size:14.5px;margin-top:2px}
+.org .conn{width:2px;height:18px;background:var(--line-strong)}
+.org .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.org .chipwrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:640px;margin-top:4px}
+.org .chip{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:12.5px;color:var(--ink);font-weight:500}
+.org .chip.head{background:var(--paper-2);border-color:var(--line-strong);font-weight:600;color:var(--navy)}
+
+/* ---------- Calendar ---------- */
+.cal-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;font-size:12.5px;color:var(--ink-soft)}
+.cal-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.months{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:720px){.months{grid-template-columns:1fr}}
+.mo{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:.2s}
+.mo.now{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass),var(--shadow-lg)}
+.mo.past{opacity:.66}
+.mo-head{padding:15px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);background:linear-gradient(var(--paper-2),var(--paper))}
+.mo.now .mo-head{background:linear-gradient(120deg,rgba(194,161,94,.2),var(--paper))}
+.mo-head .mm{font-family:var(--disp);font-weight:600;font-size:19px;color:var(--navy)}
+.mo-head .dd{font-size:12px;color:var(--ink-soft)}
+.mo-head .badge{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.badge.b-now{background:var(--brass);color:var(--navy)}
+.badge.b-done{background:var(--paper-2);color:var(--muted);border:1px solid var(--line-strong)}
+.badge.b-next{background:var(--navy);color:var(--brass-2)}
+.mo-body{padding:14px 18px 18px}
+.mo-body ul{list-style:none}
+.mo-body li{position:relative;padding-left:19px;font-size:13px;color:var(--ink-soft);margin-bottom:7px;line-height:1.45}
+.mo-body li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--brass-deep)}
+.mo-body li b{color:var(--ink);font-weight:600}
+
+/* ---------- MDV ---------- */
+.mdv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:720px){.mdv-grid{grid-template-columns:1fr}}
+.mdv-sec{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;cursor:pointer;transition:.2s;display:flex;gap:14px;align-items:flex-start}
+.mdv-sec:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--line-strong)}
+.mdv-sec .no{font-family:var(--disp);font-weight:600;font-size:20px;color:var(--brass-deep);flex-shrink:0;width:34px}
+.mdv-sec .mm{flex:1;min-width:0}
+.mdv-sec .mm b{font-family:var(--disp);font-weight:600;font-size:16px;color:var(--navy);display:block}
+.mdv-sec .mm span{font-size:12.5px;color:var(--ink-soft);display:block;margin-top:3px}
+.mdv-sec .mm em{font-size:11px;color:var(--muted);font-style:normal;display:block;margin-top:7px}
+
+.blk{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.blk-head{padding:13px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;background:linear-gradient(var(--paper-2),var(--paper));transition:.15s}
+.blk-head:hover{background:var(--paper-2)}
+.blk-head b{font-family:var(--disp);font-weight:600;font-size:15px;color:var(--navy);flex:1}
+.blk-head .pg{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.blk-head .chev{width:18px;height:18px;stroke:var(--brass-deep);transition:transform .2s;flex-shrink:0}
+.blk.open .blk-head .chev{transform:rotate(180deg)}
+.blk-body{display:none;border-top:1px solid var(--line)}
+.blk.open .blk-body{display:block}
+.blk-body pre{font-family:var(--mono);font-size:12px;line-height:1.55;color:var(--ink);padding:16px 18px;white-space:pre;overflow-x:auto;background:#fffdf8}
+@media(max-width:600px){.blk-body pre{font-size:11px}}
+
+/* ---------- Search overlay ---------- */
+.ov{position:fixed;inset:0;z-index:100;background:rgba(13,31,56,.55);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding:70px 16px 20px}
+.ov.open{display:flex;animation:fade .2s ease}
+.ov-box{background:var(--paper);border-radius:var(--r);width:100%;max-width:640px;max-height:80vh;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);border:1px solid var(--line-strong);overflow:hidden}
+.ov-in{display:flex;align-items:center;gap:11px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.ov-in svg{width:19px;height:19px;stroke:var(--brass-deep);flex-shrink:0}
+.ov-in input{flex:1;border:none;outline:none;font-family:var(--body);font-size:16px;color:var(--ink);background:none}
+.ov-in .esc{font-size:10px;font-family:var(--mono);color:var(--muted);border:1px solid var(--line-strong);padding:3px 7px;border-radius:5px}
+.ov-res{overflow-y:auto;padding:8px}
+.ov-hint{padding:26px 20px;text-align:center;color:var(--muted);font-size:13.5px}
+.res{padding:12px 14px;border-radius:var(--r-sm);cursor:pointer;transition:.12s;border:1px solid transparent}
+.res:hover{background:var(--paper-2);border-color:var(--line)}
+.res .rt{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--brass-deep)}
+.res b{font-size:14.5px;color:var(--navy);font-weight:600;display:block;margin:3px 0}
+.res .sn{font-size:12.5px;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.res mark{background:var(--brass-2);color:var(--navy);padding:0 2px;border-radius:2px}
+.res-count{padding:8px 14px 4px;font-size:11.5px;color:var(--muted);letter-spacing:.3px}
+
+/* ---------- Footer ---------- */
+.foot{background:var(--navy);color:rgba(245,239,226,.66);font-size:12.5px;padding:34px 20px;border-top:1px solid rgba(194,161,94,.25)}
+.foot-in{max-width:var(--wrap);margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:flex-start}
+.foot b{color:var(--brass-2);font-family:var(--disp);font-weight:600;font-size:14px;display:block;margin-bottom:6px}
+.foot a{color:var(--brass-2);text-decoration:none;border-bottom:1px solid transparent}
+.foot a:hover{border-color:var(--brass-2)}
+.foot .src{max-width:52ch;line-height:1.6}
+
+/* utility */
+.hidden{display:none!important}
+
+/* ===== AUTH / ROLE / PWA ===== */
+.gate{position:fixed;inset:0;z-index:200;background:radial-gradient(120% 120% at 80% 0,rgba(29,63,99,.6),transparent 55%),var(--navy);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}
+.gate.hidden{display:none}
+.login-wrap{width:100%;max-width:405px}
+.login-card{background:var(--paper);border:1px solid var(--line-strong);border-radius:var(--r);padding:32px 28px;box-shadow:var(--shadow-lg);text-align:center}
+.login-logo{width:86px;height:86px;border-radius:50%;box-shadow:0 0 0 2px rgba(194,161,94,.5);margin-bottom:14px}
+.login-card h1{font-family:var(--disp);font-weight:600;font-size:22px;color:var(--navy);line-height:1.15}
+.login-card .sub{font-size:11.5px;color:var(--brass-deep);letter-spacing:.6px;margin-top:4px;margin-bottom:22px}
+.rtabs{display:flex;gap:5px;background:var(--paper-2);padding:5px;border-radius:12px;margin-bottom:20px}
+.rtab{flex:1;font-size:12px;font-weight:600;padding:9px 4px;border-radius:8px;color:var(--ink-soft);transition:.15s}
+.rtab.active{background:var(--navy);color:var(--cream)}
+.field{display:block;text-align:left;margin-bottom:13px}
+.field span{display:block;font-size:12.5px;font-weight:600;color:var(--navy-2);margin-bottom:6px}
+.field input{width:100%;font-family:inherit;font-size:15px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:10px;background:#fff;color:var(--ink)}
+.field input:focus{outline:none;border-color:var(--brass)}
+.msg{min-height:18px;font-size:12.5px;color:var(--danger);text-align:left;margin-bottom:6px}
+.btn{width:100%;background:linear-gradient(140deg,var(--brass-2),var(--brass-deep));color:var(--navy);font-weight:700;font-size:15px;padding:13px;border-radius:11px;transition:.18s;font-family:inherit}
+.btn:hover{filter:brightness(1.05)}
+.btn:disabled{opacity:.6;cursor:default}
+.hint{font-size:11.5px;color:var(--muted);margin-top:13px;line-height:1.5}
+.gate-foot{text-align:center;color:rgba(245,239,226,.5);font-size:11px;margin-top:16px;line-height:1.5}
+.userchip{display:flex;align-items:center;gap:10px;margin-left:8px}
+.userchip .who{font-size:12px;color:var(--brass-2);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.userchip .logout{font-size:11.5px;font-weight:600;color:var(--cream);border:1px solid rgba(194,161,94,.4);padding:6px 12px;border-radius:999px}
+.userchip .logout:hover{background:rgba(194,161,94,.15)}
+@media(max-width:680px){.userchip .who{display:none}}
+/* forms */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+.form-grid .full{grid-column:1/-1}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld label{font-size:12.5px;font-weight:600;color:var(--navy-2)}
+.fld input,.fld select,.fld textarea{font-family:inherit;font-size:14px;padding:11px 13px;border:1px solid var(--line-strong);border-radius:10px;background:#fff;color:var(--ink)}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--brass)}
+.fld input.ro{background:var(--paper-2);color:var(--ink-soft)}
+.fld textarea{resize:vertical;min-height:70px}
+/* status badges */
+.st{display:inline-block;font-size:11px;font-weight:700;padding:4px 11px;border-radius:999px;border:1px solid;white-space:nowrap}
+.st-belum{color:#77808f;background:#f2ecdd;border-color:#d3c9b0}
+.st-tunggu{color:#b8863a;background:#fdf5e6;border-color:#e8c98a}
+.st-proses{color:#2b5f8a;background:#eaf3fb;border-color:#a9cbe8}
+.st-selesai{color:#3f7d54;background:#eaf5ee;border-color:#a9d6ba}
+.st-betul{color:#a8492f;background:#fbece7;border-color:#e6b3a3}
+.status-banner{display:flex;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.status-banner .lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600}
+.status-banner h3{font-family:var(--disp);font-weight:600;font-size:17px;color:var(--navy);margin-top:2px}
+/* dashboard */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0}
+.toolbar select,.toolbar input{font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--paper);color:var(--ink)}
+.toolbar input{flex:1;min-width:150px}
+.btn-sm{font-size:12.5px;font-weight:600;padding:9px 15px;border-radius:10px;background:var(--navy);color:var(--cream);white-space:nowrap}
+.btn-sm.ghost{background:var(--paper);color:var(--navy);border:1px solid var(--line-strong)}
+.dwrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.dtable{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+.dtable th{text-align:left;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:11px 13px;border-bottom:2px solid var(--line-strong);background:var(--paper-2);position:sticky;top:0}
+.dtable td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-soft)}
+.dtable td b{color:var(--ink)}
+.dtable tr:hover td{background:var(--paper-2)}
+select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid var(--line-strong);border-radius:8px;background:#fff;color:var(--ink)}
+.modal{position:fixed;inset:0;z-index:210;background:rgba(13,31,56,.62);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:24px}
+.modal.open{display:flex}
+.modal-card{background:var(--paper);border-radius:var(--r);max-width:390px;width:100%;padding:28px;box-shadow:var(--shadow-lg)}
+.modal-card h3{font-family:var(--disp);font-weight:600;font-size:19px;color:var(--navy);margin-bottom:8px}
+.modal-card p{font-size:13px;color:var(--ink-soft);margin-bottom:16px}
+.empty{text-align:center;color:var(--muted);padding:34px;font-size:14px}
+.offline-note{background:#fdf5e6;border:1px solid #e8c98a;color:#8a6521;border-radius:var(--r);padding:16px 18px;font-size:13.5px}
+</style>
+</head>
+<body>
+<!-- ===== LOGIN GATE ===== -->
+<div id="gate" class="gate">
+  <div class="login-wrap">
+    <div class="login-card">
+      <img src="icons/logo.png" class="login-logo" alt="EMIS Kedah">
+      <h1>Pusat Rujukan Guru Data</h1>
+      <div class="sub">EMIS KEDAH · AKURASI DATA, NADI KITA</div>
+      <div class="rtabs">
+        <button class="rtab active" data-role="guru" onclick="setRole('guru',this)">Guru Data</button>
+        <button class="rtab" data-role="ppd" onclick="setRole('ppd',this)">Pegawai PPD</button>
+        <button class="rtab" data-role="admin" onclick="setRole('admin',this)">Admin JPN</button>
+      </div>
+      <label class="field"><span id="idLabel">Kod Sekolah</span><input id="loginId" autocomplete="off" placeholder="cth: CEA4060"></label>
+      <label class="field"><span>PIN</span><input id="loginPin" type="password" autocomplete="off" placeholder="Kata laluan"></label>
+      <div class="msg" id="loginMsg"></div>
+      <button class="btn" id="loginBtn" onclick="doLogin()">Log Masuk</button>
+      <p class="hint" id="loginHint">PIN pertama = Kod Sekolah anda. Anda akan diminta tukar selepas log masuk pertama.</p>
+    </div>
+    <p class="gate-foot">Sistem dalaman JPN Kedah — capaian rujukan hanya selepas log masuk.</p>
+  </div>
+</div>
+
+<!-- ===== PIN MODAL ===== -->
+<div id="pinModal" class="modal">
+  <div class="modal-card">
+    <h3 id="pinTitle">Tukar PIN</h3>
+    <p id="pinDesc">Untuk keselamatan, sila tetapkan PIN baharu bagi menggantikan PIN lalai.</p>
+    <label class="field"><span>PIN semasa</span><input id="pinOld" type="password" autocomplete="off"></label>
+    <label class="field"><span>PIN baharu (min. 6 aksara)</span><input id="pinNew" type="password" autocomplete="off"></label>
+    <label class="field"><span>Ulang PIN baharu</span><input id="pinNew2" type="password" autocomplete="off"></label>
+    <div class="msg" id="pinMsg"></div>
+    <button class="btn" id="pinBtn" onclick="submitPin()">Simpan PIN</button>
+    <p class="hint" id="pinSkip"></p>
+  </div>
+</div>
+
+
+<!-- ===== TOP BAR ===== -->
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand" onclick="go('home')">
+      <img class="logo" src="icons/logo.png" alt="EMIS Kedah">
+      <div class="txt"><b>Pusat Rujukan Guru Data</b><span>Akurasi Data, Nadi Kita</span></div>
+    </div>
+    <button class="top-search" onclick="openSearch()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span>Cari variabel, peranan, tugas…</span><kbd>/</kbd>
+    </button>
+    <div id="userChip" class="userchip hidden">
+      <span class="who" id="whoName">—</span>
+      <button class="logout" onclick="logout()">Keluar</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== HOME ===== -->
+<section id="home" class="view active">
+  <div class="hero">
+    <div class="hero-in">
+      <span class="eyebrow">Bengkel Guru Data · Sekolah Negeri Kedah</span>
+      <h1>Segala rujukan tugas <em>Guru Data</em> di satu tempat.</h1>
+      <p class="lead">Tanggungjawab, kalendar kutipan, dan definisi setiap variabel EMIS — disatukan daripada dokumen rasmi KPM untuk rujukan pantas sepanjang tahun.</p>
+      <div class="hero-meta">
+        <span class="tag">SOP SPS Versi 3.0</span>
+        <span class="tag">Kutipan MPS/EMIS 2026</span>
+        <span class="tag">Manual Definisi Variabel</span>
+      </div>
+      <div class="now" id="nowStrip" onclick="go('kalendar')">
+        <div class="cal"><div class="m" id="nowMon">—</div><div class="d" id="nowDay">—</div></div>
+        <div class="body">
+          <div class="lbl">Fokus kutipan bulan ini</div>
+          <h3 id="nowTitle">Memuatkan…</h3>
+          <p id="nowDesc"></p>
+        </div>
+        <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kick">Tiga tiang rujukan</div>
+      <h2>Pilih sumber</h2>
+      <p>Setiap tiang menyatukan satu dokumen rasmi ke dalam bentuk yang mudah dilayari dan dicari.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar" onclick="go('sop')">
+        <span class="cnt">SOP v3.0</span>
+        <div class="num">Tiang 01</div>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></div>
+        <h3>Tanggungjawab & Tadbir Urus</h3>
+        <p>Peranan ikut peringkat, 5 jawatankuasa pengurusan maklumat, dan carta alir proses verifikasi data.</p>
+        <div class="foot">Buka SOP <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div>
+      <div class="pillar" onclick="go('kalendar')">
+        <span class="cnt">2026</span>
+        <div class="num">Tiang 02</div>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <h3>Kalendar Kutipan Data</h3>
+        <p>Jadual kutipan & semakan MPS/EMIS 12 bulan 2026, dengan fokus setiap bulan dan makluman wajib.</p>
+        <div class="foot">Buka kalendar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div>
+      <div class="pillar" onclick="go('mdv')">
+        <span class="cnt" id="mdvCount">— variabel</span>
+        <div class="num">Tiang 03</div>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
+        <h3>Kamus Definisi Variabel</h3>
+        <p>Manual Definisi Variabel MPS penuh — 16 seksyen, kod & keterangan, tindakan pengisian dan rujukan.</p>
+        <div class="foot">Buka kamus <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact"><b>2015</b><span>SPS dilaksana sejak 1 Januari (SS Bil. 21/2014)</span></div>
+      <div class="fact"><b>SPI 1/2022</b><span>Garis panduan pelantikan & pengurusan Guru Data</span></div>
+      <div class="fact"><b>Bulanan</b><span>Pengesahan PGB wajib sebelum hari terakhir setiap bulan</span></div>
+      <div class="fact"><b>Hujung bulan</b><span>Kutipan data dimuat turun pada hari terakhir bulan</span></div>
+    </div>
+  </div>
+  <div id="roleZone"></div>
+  <div class="wrap">
+    <div style="height:60px"></div>
+  </div>
+</section>
+
+<!-- ===== SOP ===== -->
+<section id="sop" class="view">
+  <div class="subhead"><div class="subhead-in">
+    <div class="crumb" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Laman utama</div>
+    <h1>Tanggungjawab & Tadbir Urus SPS</h1>
+    <p>Prosedur Operasi Standard Sistem Pengurusan Sekolah (SPS) Versi 3.0 — Kementerian Pendidikan Malaysia, 1 Ogos 2022.</p>
+    <div class="tabs" id="sopTabs"></div>
+  </div></div>
+  <div class="wrap content" id="sopContent"></div>
+</section>
+
+<!-- ===== KALENDAR ===== -->
+<section id="kalendar" class="view">
+  <div class="subhead"><div class="subhead-in">
+    <div class="crumb" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Laman utama</div>
+    <h1>Kalendar Kutipan & Semakan Data 2026</h1>
+    <p>Jadual kutipan MPS/EMIS mengikut bulan bagi tahun 2026. Kutipan dijalankan berterusan sepanjang tahun; fokus bulanan berikut adalah garis panduan asas.</p>
+    <div class="tabs" id="calTabs"></div>
+  </div></div>
+  <div class="wrap content">
+    <div class="panel active" id="cal-jadual">
+      <div class="cal-legend">
+        <span><i style="background:var(--brass)"></i>Bulan semasa</span>
+        <span><i style="background:var(--paper-2);border:1px solid var(--line-strong)"></i>Telah berlalu</span>
+        <span><i style="background:var(--navy)"></i>Akan datang</span>
+      </div>
+      <div class="months" id="monthGrid"></div>
+    </div>
+    <div class="panel" id="cal-makluman"></div>
+  </div>
+</section>
+
+<!-- ===== MDV ===== -->
+<section id="mdv" class="view">
+  <div class="subhead"><div class="subhead-in">
+    <div class="crumb" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Laman utama</div>
+    <h1>Manual Definisi Variabel — MPS</h1>
+    <p>Semakan 2024 · Sektor Perancangan Data Makro Pendidikan, BPPDP. Setiap seksyen menyenaraikan variabel, kod & keterangan, serta rujukan pekeliling.</p>
+    <div class="tabs"><button class="tab active" onclick="openSearch('')">🔍 Cari variabel</button></div>
+  </div></div>
+  <div class="wrap content">
+    <div id="mdvHome"></div>
+    <div id="mdvDetail" class="hidden"></div>
+  </div>
+</section>
+
+<!-- ===== GURU DATA · SURAT LANTIKAN ===== -->
+<section id="lantikan" class="view">
+  <div class="subhead"><div class="subhead-in">
+    <div class="crumb" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Laman utama</div>
+    <h1>Surat Lantikan Guru Data</h1>
+    <p>Isi & kemas kini butiran anda. Status akan disemak oleh Admin JPN untuk penyediaan Surat Lantikan.</p>
+  </div></div>
+  <div class="wrap content" id="lantikanBody"></div>
+</section>
+
+<!-- ===== PPD · PANTAUAN DAERAH ===== -->
+<section id="pantauPPD" class="view">
+  <div class="subhead"><div class="subhead-in">
+    <div class="crumb" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Laman utama</div>
+    <h1 id="ppdTitle">Pantauan Sekolah Daerah</h1>
+    <p>Status penghantaran Surat Lantikan Guru Data bagi sekolah dalam daerah anda (paparan sahaja).</p>
+  </div></div>
+  <div class="wrap content" id="ppdBody"></div>
+</section>
+
+<!-- ===== ADMIN · DASHBOARD LANTIKAN ===== -->
+<section id="dashLantikan" class="view">
+  <div class="subhead"><div class="subhead-in">
+    <div class="crumb" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Laman utama</div>
+    <h1>Dashboard Surat Lantikan</h1>
+    <p>Semua permohonan seluruh negeri. Kemas kini status & eksport senarai untuk penyediaan surat.</p>
+  </div></div>
+  <div class="wrap content" id="adminBody"></div>
+</section>
+
+<!-- ===== SEARCH OVERLAY ===== -->
+<div class="ov" id="ov" onclick="if(event.target===this)closeSearch()">
+  <div class="ov-box">
+    <div class="ov-in">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="ovInput" placeholder="Cari merentas SOP, kalendar & kamus variabel…" autocomplete="off">
+      <span class="esc">ESC</span>
+    </div>
+    <div class="ov-res" id="ovRes"><div class="ov-hint">Taip untuk mula mencari — contoh: <b>gred sekolah</b>, <b>guru data</b>, <b>asrama</b>, <b>BIMLTK</b>.</div></div>
+  </div>
+</div>
+
+<footer class="foot"><div class="foot-in">
+  <img class="logo" src="icons/logo.png" alt="EMIS Kedah">
+  <div class="src">
+    <b>Sumber rasmi</b>
+    Disusun daripada tiga dokumen KPM: <i>Prosedur Operasi Standard SPS Versi 3.0</i> (1 Ogos 2022); surat siaran <i>Pelaksanaan Kutipan Data MPS/EMIS 2026</i> (28 Januari 2026); dan <i>Manual Definisi Variabel MPS — Semakan 2024</i>. Rujuk dokumen asal untuk keputusan rasmi.
+  </div>
+  <div>
+    <b>Bantuan SPS</b>
+    MPS: <a href="mailto:emisonline@moe.gov.my">emisonline@moe.gov.my</a><br>
+    MPG: <a href="mailto:helpdesk_smg@moe.gov.my">helpdesk_smg@moe.gov.my</a><br>
+    MPM: <a href="mailto:apdm.team@moe.gov.my">apdm.team@moe.gov.my</a><br>
+    Portal: <a href="https://emisonline.moe.gov.my" target="_blank" rel="noopener">emisonline.moe.gov.my</a>
+  </div>
+</div></footer>
+
+<script src="mdv-data.js"></script>
+<script>
+/* ================= DATA: MDV ================= */
+const MDV = window.MDV || {sections:[]};
+/* ================= DATA: SOP ================= */
+const SOP = {
+  pengenalan: {
+    intro: "Sistem Pengurusan Sekolah (SPS) merangkumi tiga modul utama: Modul Pengurusan Sekolah (MPS), Modul Pengurusan Guru (MPG) dan Modul Pengurusan Murid (MPM). Dilaksanakan sejak 1 Januari 2015, SPS menjadi sumber data rasmi sekolah, guru dan murid untuk analisis, pemantauan, penyelidikan, perancangan dan pembuatan keputusan di peringkat KPM.",
+    committees: "Bagi menyokong pengurusan data di semua peringkat, satu jawatankuasa pengurusan maklumat ditubuhkan pada setiap peringkat: JPMK (KPM), JPMN (JPN), JPMD (PPD) dan JPMS (sekolah).",
+    integrity: "Data rasmi KPM mesti melalui proses penentusahan oleh pemilik data pada tarikh tertentu. Prosedur pengurusan data yang teratur dari sekolah → PPD → JPN → KPM memastikan data yang sahih dan berintegriti."
+  },
+  levels: [
+    { id:'sekolah', name:'Sekolah', sub:'Fokus Guru Data', roles:[
+      { title:'Guru Data', tag:'Peranan teras', spot:true, duties:[
+        "Menyemak dan memastikan semua medan dalam MPS lengkap dan terkini.",
+        "Melaksanakan verifikasi SPS bersama-sama JPMS.",
+        "Membuat semak silang data bersama-sama JKPMS.",
+        "Menyemak kesahihan data dalam Lampiran Pengesahan Maklumat Sekolah.",
+        "Mendapatkan pengesahan Pengetua/Guru Besar untuk Lampiran Pengesahan Maklumat Sekolah.",
+        "Membuat analisis data peringkat sekolah.",
+        "Membentangkan laporan sekolah, guru, AKP dan murid untuk disahkan dalam JPMS.",
+        "Mengurus setia JPMS.",
+        "Memastikan fail pengurusan data dan maklumat diurus secara sistematik.",
+        "Membekal data rasmi sekolah, guru, AKP dan murid apabila diperlukan oleh pihak pengurusan sekolah."
+      ]},
+      { title:'Guru Data — dalam Modul Pengurusan Sekolah (MPS)', tag:'Tugas MPS', duties:[
+        "Mengunci masuk data MPS berdasarkan dokumen berkaitan.",
+        "Menyemak dan mengemas kini data MPS setiap bulan.",
+        "Membuat semak silang data MPS bersama-sama ahli JPMS berkaitan.",
+        "Menyemak kesahihan data MPS dalam LPMS.",
+        "Mencetak laporan daripada MPS.",
+        "Membentangkan laporan MPS untuk disahkan dalam mesyuarat JPMS.",
+        "Membekal data MPS apabila diperlukan oleh pihak sekolah."
+      ]},
+      { title:'Pengetua / Guru Besar', tag:'Pengesah', duties:[
+        "Mengeluarkan arahan pengisian, pengemaskinian dan pembekalan data sekolah, guru, AKP dan murid kepada Guru Data, semua guru dan AKP.",
+        "Mengesahkan data sekolah, guru, AKP dan murid."
+      ]},
+      { title:'Penolong Kanan Pentadbiran', tag:'Pengurus Data SPS', duties:[
+        "Pengurus Data SPS di peringkat sekolah.",
+        "Menyemak kesahihan data sekolah, guru, AKP dan murid."
+      ]},
+      { title:'AJK JPMS Lain', tag:'Sokongan bidang', duties:[
+        "Menyediakan data bidang masing-masing.",
+        "Membuat semak silang data bersama-sama ahli JPMS.",
+        "Mengesahkan data bidang masing-masing."
+      ]}
+    ]},
+    { id:'ppd', name:'PPD', sub:'Pejabat Pendidikan Daerah', roles:[
+      { title:'Sektor Perancangan — Pegawai Pusat Sehenti Data', tag:'Pengurus Data', duties:[
+        "Pengurus Data SPS di Pusat Sehenti Data PPD.",
+        "Mengurus setia Jawatankuasa Pengurusan Maklumat Daerah (JPMD).",
+        "Menyelaras permohonan maklumat peringkat PPD.",
+        "Mengurus, menyelaras, menyemak dan membuat verifikasi setiap elemen data dalam MPS.",
+        "Melaksanakan verifikasi bersama sektor berkaitan menerusi Jawatankuasa Teknikal Verifikasi Data.",
+        "Melaksanakan pemantauan pengurusan data SPS (MPS, MPG, MPM).",
+        "Menguruskan Repositori Data PPD; menyediakan analisis & statistik Maklumat Asas Pendidikan PPD.",
+        "Membentangkan analisis data MPS dalam JPMD."
+      ]},
+      { title:'Sektor Pengurusan Sekolah', tag:'MPG', duties:[
+        "Mengurus, menyelaras, menyemak dan verifikasi setiap elemen data dalam MPG; mengesahkan data MPG.",
+        "Pemantauan pengurusan & pengisian data MPG; membekal data operasi guru kepada pengurusan PPD.",
+        "Menyediakan analisis & membentangkan analisis data guru dalam JPMD."
+      ]},
+      { title:'Sektor Pembangunan Murid', tag:'MPS / MPM', duties:[
+        "Verifikasi & pengesahan setiap elemen data MPS/MPM; pemantauan pengurusan data.",
+        "Membekal data kepada pengurusan PPD apabila diperlukan.",
+        "Menyediakan & membentangkan analisis data dalam JPMD."
+      ]},
+      { title:'Sektor/Unit Lain', tag:'Bidang masing-masing', duties:[
+        "Mengurus, menyelaras & verifikasi elemen data di bawah bidang masing-masing; mengesahkan data di bawah kawalan masing-masing.",
+        "Membekal data operasi & memantau pengisian; membentangkan analisis dalam JPMD."
+      ]}
+    ]},
+    { id:'jpn', name:'JPN', sub:'Jabatan Pendidikan Negeri', roles:[
+      { title:'Sektor Perancangan & Pengurusan PPD (SPPPPD)', tag:'Pengurus Data', duties:[
+        "Pengurus Data SPS di Pusat Sehenti Data JPN.",
+        "Mengurus setia Jawatankuasa Pengurusan Maklumat Negeri (JPMN); menyelaras permohonan maklumat peringkat JPN.",
+        "Membekal data rasmi (sekolah, guru, AKP, murid) kepada pengurusan JPN.",
+        "Pemantauan pengurusan data SPS (MPS, MPG, MPM); verifikasi setiap elemen data dalam MPS.",
+        "Verifikasi bersama Sektor Pengurusan Sekolah, Pembelajaran, Pembangunan Murid, Infrastruktur & Perolehan dan sektor lain.",
+        "Mengesahkan data MPS peringkat negeri; menyediakan analisis & statistik Maklumat Asas Pendidikan JPN.",
+        "Membentangkan analisis data MPS dalam JPMN."
+      ]},
+      { title:'Sektor Pengurusan Sekolah', tag:'MPG', duties:[
+        "Verifikasi & pengesahan setiap elemen data dalam MPG; membekal data operasi guru; pemantauan; analisis & pembentangan dalam JPMN."
+      ]},
+      { title:'Sektor Pembangunan Murid', tag:'MPS / MPM', duties:[
+        "Verifikasi & pengesahan elemen data MPS/MPM; pembekalan data; pemantauan; analisis & pembentangan dalam JPMN."
+      ]},
+      { title:'Sektor Pendidikan Khas', tag:'MPS / MPM', duties:[
+        "Verifikasi & pengesahan elemen data MPS/MPM; pembekalan; pemantauan; analisis & pembentangan dalam JPMN."
+      ]},
+      { title:'Sektor Sumber Manusia', tag:'AKP dalam MPG', duties:[
+        "Verifikasi & pengesahan elemen data AKP dalam MPG; membekal data operasi AKP; pemantauan; analisis & pembentangan dalam JPMN."
+      ]},
+      { title:'Sektor/Unit Lain', tag:'Bidang masing-masing', duties:[
+        "Mengesahkan data bidang masing-masing; melaksanakan pemantauan pengisian data bidang masing-masing."
+      ]}
+    ]},
+    { id:'kpm', name:'KPM', sub:'Kementerian Pendidikan Malaysia', roles:[
+      { title:'Bahagian Perancangan & Penyelidikan Dasar Pendidikan', tag:'Pembekal data rasmi', duties:[
+        "Membekal data rasmi (sekolah, guru, murid) kepada pengurusan KPM dan agensi dalam/luar KPM.",
+        "Menyebar luas maklumat asas pendidikan; menguruskan pengoperasian MPS.",
+        "Mengenal pasti & mencadang penambahbaikan SPS; mengurus setia JPMK."
+      ]},
+      { title:'Bahagian Operasi Berkaitan (BPSH, BPLTV, BPSBP, BPI, BPKhas, BSKK, BPSwasta, Genius)', tag:'Penentu sah', duties:[
+        "Menentu sah setiap elemen data pengurusan guru dan murid.",
+        "Melaksana pemantauan pengoperasian modul pengurusan guru dan murid."
+      ]},
+      { title:'Bahagian Pengurusan Sumber Manusia (BPSM)', tag:'AKP', duties:[
+        "Menentu sah setiap elemen data pengurusan guru dan AKP bersama bahagian berkaitan.",
+        "Melaksana pemantauan pengoperasian AKP."
+      ]},
+      { title:'Bahagian Pengurusan Maklumat (BPM)', tag:'Sokongan teknikal', duties:[
+        "Mengurus khidmat sokongan teknikal bagi aplikasi dan pangkalan data pendidikan."
+      ]}
+    ]}
+  ],
+  committees: [
+    { id:'jpms', name:'JPMS — Jawatankuasa Pengurusan Maklumat Sekolah', note:'Guru Data bertindak sebagai Setiausaha. Mana-mana guru berkaitan boleh dilantik sebagai ahli.',
+      chain:[['Pengerusi','Pengetua / Guru Besar'],['Timbalan Pengerusi I','Penolong Kanan Pentadbiran'],['Timbalan Pengerusi II','PK HEM / KOKO / KHAS / PETANG'],['Setiausaha','Guru Data'],['Penolong Setiausaha','Penolong Guru Data']],
+      members:['Pembantu Tadbir Data','SU Kurikulum','SU Peperiksaan','SU Hal Ehwal Murid','SU Kokurikulum','SU Sukan','Guru Disiplin','Guru Aset','Guru SPBT','Guru Media','Semua Ketua Bidang (SM) / Ketua Panitia (SR)','Semua Guru Penyelaras Tahun / Tingkatan / PKI','Guru Penyelaras Bestari / ICT','Guru Kokurikulum Tingkatan 6'] },
+    { id:'jkpms', name:'JKPMS — Jawatankuasa Kerja Pengurusan Maklumat Sekolah', note:'Penubuhan tertakluk kepada keperluan sekolah (semak silang sahaja). Guru Data sebagai Setiausaha.',
+      chain:[['Pengerusi','Penolong Kanan Pentadbiran'],['Setiausaha','Guru Data'],['Penolong Setiausaha','Penolong Guru Data']],
+      members:['Pembantu Tadbir Data','Pembantu Tadbir Kewangan','SU Kurikulum','SU Peperiksaan','SU Hal Ehwal Murid','SU Kokurikulum','SU Sukan','Guru Disiplin','Guru Aset','Guru SPBT','Guru Media','Guru Penyelaras LADAP','Guru Penyelaras Jadual Waktu','Guru Bimbingan & Kaunseling','Guru Penyelaras Bestari / ICT','Semua Ketua Bidang / Ketua Panitia','Semua Guru Penyelaras Tahun / Tingkatan / PKI','Guru Kokurikulum Tingkatan 6'] },
+    { id:'jpmd', name:'JPMD — Jawatankuasa Pengurusan Maklumat Daerah', note:'Urus setia: Sektor Perancangan PPD. Mana-mana unit berkaitan boleh dilantik.',
+      chain:[['Pengerusi','Pegawai Pendidikan Daerah'],['Timbalan Pengerusi','Timbalan PPD'],['Urus Setia','Sektor Perancangan']],
+      members:['Sektor Pengurusan Sekolah','Unit Pentaksiran & Peperiksaan','Sektor Pembelajaran','Sektor Pembangunan Murid (HEM & UPBM)','Sektor Pengurusan','Unit Pendidikan Islam','Unit Pendidikan Khas','Unit Psikologi & Kaunseling','Unit Kewangan, Infrastruktur & Perolehan','Unit Sumber Manusia, ICT & Pentadbiran Am'] },
+    { id:'jpmn', name:'JPMN — Jawatankuasa Pengurusan Maklumat Negeri', note:'Urus setia: SPPPPD. Merangkumi semua TP/KPPK/KPP/KPN di JPN dan semua PPD.',
+      chain:[['Pengerusi','Pengarah Jabatan Pendidikan Negeri'],['Timbalan Pengerusi','Timbalan Pengarah — Sektor Perancangan & Pengurusan PPD'],['Urus Setia','SPPPPD']],
+      members:['Semua TP / KPPK / KPP / KPN di JPN','Semua PPD','KPPK Prasekolah & Rendah','KPP HEM','KPPK Menengah & Tingkatan 6','Sains & Matematik','Perjawatan & Perkhidmatan','Pembangunan & Pengurusan Infrastruktur','Perolehan','Pentaksiran & Peperiksaan'] },
+    { id:'jpmk', name:'JPMK — Jawatankuasa Pengurusan Maklumat Kementerian', note:'Urus setia: BPPDP. Dipengerusikan oleh Ketua Pengarah Pendidikan Malaysia.',
+      chain:[['Pengerusi','Ketua Pengarah Pendidikan Malaysia'],['Timbalan Pengerusi','TKSU (Pengurusan) & TKPPM (pelbagai sektor)'],['Urus Setia','BPPDP']],
+      members:['BPM','BPSBP','BSKK','BPKhas','BPSH','BPLTV','BPI','BPK','BSTP','LP','BKew','BPSM','BPSwasta','IPGM','Jemaah Nazir','BPG','Bahagian GENIUS','Bahagian Perolehan'] }
+  ],
+  flow: {
+    title:'Carta Alir Proses Kerja — Peringkat Sekolah',
+    steps:[
+      { t:'terminal', label:'Mula', d:'' },
+      { t:'process', n:'1', label:'Kunci masuk data oleh sekolah', d:'Guru Data & guru berkaitan mengisi data ke dalam SPS.' },
+      { t:'process', n:'2', label:'Muat turun / paparan data SPS', d:'Semak data yang telah direkodkan.' },
+      { t:'process', n:'3', label:'Proses verifikasi', d:'Semak silang bersama JPMS / JKPMS.' },
+      { t:'decision', label:'Betul / tepat?', d:'Jika tidak → kemas kini semula, ulang verifikasi.', loop:'Tidak → Kemaskini' },
+      { t:'process', n:'4', label:'Penyediaan laporan awal data', d:'Sedia laporan untuk dibentangkan.' },
+      { t:'decision', label:'Sah dalam mesyuarat JPMS?', d:'Dibentangkan & disahkan dalam mesyuarat JPMS. Jika tidak → kemas kini.', loop:'Tidak → Kemaskini' },
+      { t:'process', n:'5', label:'Penyediaan laporan data SPS', d:'Laporan rasmi disediakan.' },
+      { t:'terminal', label:'Tamat', d:'' }
+    ]
+  },
+  contacts:[
+    { m:'Modul Pengurusan Sekolah (MPS)', o:'Sektor Perancangan Data Makro Pendidikan, BPPDP, KPM — Aras 2, Blok E8, Putrajaya', e:'emisonline@moe.gov.my' },
+    { m:'Modul Pengurusan Guru (MPG)', o:'Bahagian Pengurusan Sekolah Harian, KPM — Aras 4, Blok E2, Putrajaya', e:'helpdesk_smg@moe.gov.my' },
+    { m:'Modul Pengurusan Murid (MPM)', o:'Bahagian Pengurusan Sekolah Harian, KPM — Unit Pengoperasian Dasar Pendidikan', e:'apdm.team@moe.gov.my' },
+    { m:'Pertanyaan Kutipan 2026 (BPPDP)', o:'Pn. Nor Ashila binti Ab. Latiff · 03-8884 6531  |  Pn. Siti Baizura binti Jamil · 03-8884 6545', e:'' }
+  ],
+  rujukan:[
+    'SPI Bil. 1/2022 — Garis Panduan Pelantikan & Pengurusan Guru Data (7 Mac 2022).',
+    'SPI KPM Bil. 4/2021 — Tadbir Urus Sekolah (Malaysian School Governance, MySG).',
+    'Surat Siaran KPM Bil. 21/2014 — Pelaksanaan SPS.',
+    'Surat Siaran KPM Bil. 15/2015 — Single Sign On (SSO) untuk SPS.',
+    'Pekeliling ICT Bil. 1/2012 — Dasar Keselamatan ICT KPM.',
+    'Akta 88 — Akta Rahsia Rasmi 1972.',
+    'Akta 709 — Akta Perlindungan Data Peribadi 2010.'
+  ]
+};
+
+/* ================= DATA: KALENDAR 2026 ================= */
+const MONTHS = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+const CAL = [
+  { end:'31/01/2026', focus:['Sesi & peringkat persekolahan — pastikan pengisian tepat; sebarang perubahan dimaklumkan segera ke PPD/JPN.','Modul Infrastruktur: bilik darjah perdana, pendidikan khas, prasekolah & pemulihan.','Data peralatan khas & kemudahan OKU.'] },
+  { end:'28/02/2026', focus:['Modul Infrastruktur: pejabat guru; makmal Sains, Fizik, Kimia, Biologi (termasuk T6).','Data peralatan khas & kemudahan OKU.'] },
+  { end:'31/03/2026', focus:['Modul Infrastruktur: makmal komputer, bengkel, kantin, pusat akses.','Semua jenis tandas, sinki, bilik-bilik khas, dewan terbuka/tertutup.','Data peralatan khas & kemudahan OKU.'] },
+  { end:'30/04/2026', focus:['Bilangan & keadaan fizikal peralatan: kerusi guru, kerusi murid, meja guru, meja murid.','Peranti ICT — terutama yang baru diterima.','Data peralatan khas & kemudahan OKU.'] },
+  { end:'31/05/2026', focus:['Modul Infrastruktur (asrama): bilik asrama, pejabat/bilik warden, pejabat penyelia, dewan makan, bilik mandi, surau.','Pejabat guru, pejabat am, pejabat PGB/Penolong Kanan/GKMP.','Data peralatan khas & kemudahan OKU.'] },
+  { end:'30/06/2026', focus:['Sesi & peringkat persekolahan — pastikan tepat; perubahan dimaklumkan SEGERA ke PPD/JPN.','Nama Sekolah Tumpang (jika menumpang); status penghuni kuarters guru.','Maklumat utiliti — elektrik, air, internet; Parlimen & DUN.','Data peralatan khas & kemudahan OKU.'] },
+  { end:'31/07/2026', focus:['No. PTJ; bekalan elektrik & air; peranti ICT (terutama baru diterima).','Pembersihan kawasan & bangunan; kawalan keselamatan.','Mod perjalanan, tempat letak kereta, kenderaan.','Data peralatan khas & kemudahan OKU.'] },
+  { end:'31/08/2026', focus:['Alamat sekolah (maklum ke PPD/JPN jika berubah); mukim.','Jarak ke PPD; sekolah terdekat; submenu Kawasan.','Data peralatan khas & kemudahan OKU.'] },
+  { end:'30/09/2026', focus:['Modul Infrastruktur: bilik darjah perdana, pendidikan khas, prasekolah, pemulihan.','Makmal Sains (rendah/menengah), Fizik, Kimia, Biologi (termasuk T6).','Data peralatan khas & kemudahan OKU.'] },
+  { end:'31/10/2026', focus:['Modul Infrastruktur: pejabat guru, makmal komputer, bengkel, kantin, pusat akses.','Semua jenis tandas, bilik-bilik khas, dewan terbuka/tertutup.','Data peralatan khas & kemudahan OKU.'] },
+  { end:'30/11/2026', focus:['Kuarters: status penghuni, bilangan kuarters, keadaan fizikal rumah, keadaan pendawaian.','Data peralatan khas & kemudahan OKU.'] },
+  { end:'31/12/2026', focus:['Peralatan: kerusi guru, kerusi murid, meja guru, meja murid.','Komputer / netbook / chromebook / notebook / tablet PC.','Data peralatan khas & kemudahan OKU.'] }
+];
+const MAKLUMAN = [
+  { h:'Kemas kini SEMUA variabel', b:'Fokus bulanan dalam jadual hanyalah garis panduan asas. Pengemaskinian <b>wajib</b> dilaksanakan pada semua variabel yang terdapat dalam MPS/EMIS.' },
+  { h:'Pengesahan PGB wajib bulanan', b:'Pengemaskinian & semakan boleh dibuat sepanjang masa. Pengesahan oleh Pengetua/Guru Besar <b>wajib</b> dibuat bagi data kutipan Januari–Disember 2026, <b>sebelum hari terakhir setiap bulan</b>.' },
+  { h:'Muat turun hujung bulan', b:'Kutipan bulanan data MPS/EMIS akan dimuat turun pada <b>hari terakhir setiap bulan</b>.' },
+  { h:'Semakan ralat berkala', b:'KPM/JPN/PPD melaksanakan semakan ralat data sekolah secara berkala setiap bulan mengikut fokus semakan dalam jadual.' },
+  { h:'Modul khusus', b:'Pengemaskinian modul Kewangan, Radas Makmal dan BIMLTK dalam MPS/EMIS dimaklumkan dari semasa ke semasa berpandukan arahan & garis panduan yang berkuat kuasa.' },
+  { h:'Akses & pengesahan', b:'Guru data mengemas kini melalui <b>emisonline.moe.gov.my</b> menggunakan kata laluan sedia ada. Data yang disahkan dipaparkan menerusi Dashboard Risalah MAP (emisonline.moe.gov.my/risalahmap).' }
+];
+
+/* ================= ROUTING ================= */
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(view).classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+  if(view==='mdv'){ showMdvHome(); }
+  if(view==='lantikan'){ loadMyLantikan(); }
+  if(view==='pantauPPD'){ loadPPD(); }
+  if(view==='dashLantikan'){ loadAdmin(); }
+  location.hash=view;
+}
+window.addEventListener('hashchange',()=>{ if(!AUTH)return; const h=location.hash.slice(1); if(h&&document.getElementById(h))go(h); });
+
+/* ================= HOME: focus now ================= */
+function initNow(){
+  const now=new Date();
+  let mi=now.getMonth(); // 0-11
+  // this reference is for 2026; if current year differs, still show current month focus
+  const c=CAL[mi];
+  document.getElementById('nowMon').textContent=MONTHS[mi].slice(0,3).toUpperCase();
+  document.getElementById('nowDay').textContent=String(now.getDate()).padStart(2,'0');
+  document.getElementById('nowTitle').textContent='Fokus '+MONTHS[mi]+' — tarikh akhir '+c.end;
+  document.getElementById('nowDesc').textContent=c.focus.join('  ·  ');
+}
+
+/* ================= SOP RENDER ================= */
+function renderSOP(){
+  const tabs=[['peranan','Peranan & Tanggungjawab'],['jk','Jawatankuasa'],['alir','Carta Alir'],['pengenalan','Pengenalan'],['pegawai','Pegawai & Rujukan']];
+  const tb=document.getElementById('sopTabs');
+  tb.innerHTML=tabs.map((t,i)=>`<button class="tab ${i===0?'active':''}" onclick="sopTab('${t[0]}',this)">${t[1]}</button>`).join('');
+  sopTab('peranan');
+}
+function sopTab(id,el){
+  if(el){document.querySelectorAll('#sopTabs .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+  const c=document.getElementById('sopContent');
+  if(id==='pengenalan'){
+    c.innerHTML=`<div class="card"><h3>Apa itu SPS?</h3><p>${SOP.pengenalan.intro}</p></div>
+      <div class="card"><h3>Jawatankuasa pengurusan maklumat</h3><p>${SOP.pengenalan.committees}</p></div>
+      <div class="card"><h3>Integriti data</h3><p>${SOP.pengenalan.integrity}</p></div>`;
+  } else if(id==='peranan'){
+    c.innerHTML=`<div class="levelbar" id="lvlBar"></div><div id="roleWrap"></div>`;
+    document.getElementById('lvlBar').innerHTML=SOP.levels.map((l,i)=>`<button class="lvl ${i===0?'active':''}" onclick="showLevel('${l.id}',this)">${l.name}<span class="s">${l.sub}</span></button>`).join('');
+    showLevel('sekolah');
+  } else if(id==='jk'){
+    c.innerHTML=SOP.committees.map(cm=>`
+      <div class="card"><h3>${cm.name}</h3><p class="orgnote">${cm.note}</p>
+        <div class="org">
+          ${cm.chain.map((n,i)=>`<div class="node ${n[0]==='Setiausaha'?'gold':''}"><div class="r">${n[0]}</div><div class="n">${n[1]}</div></div>${i<cm.chain.length-1?'<div class="conn"></div>':''}`).join('')}
+          <div class="conn"></div>
+          <div class="chipwrap"><span class="chip head">Ahli Jawatankuasa</span>${cm.members.map(m=>`<span class="chip">${m}</span>`).join('')}</div>
+        </div></div>`).join('');
+  } else if(id==='alir'){
+    const f=SOP.flow;
+    c.innerHTML=`<div class="flow"><div class="flow-title"><span>Kitaran Verifikasi Data</span><h3>${f.title}</h3></div>
+      <div class="steps">${f.steps.map(s=>`
+        <div class="step ${s.t}">
+          <div class="rail"><div class="dot"><span>${s.n||(s.t==='decision'?'?':'')}</span></div><div class="line"></div></div>
+          <div class="txt"><b>${s.label}</b>${s.d?`<small>${s.d}</small>`:''}${s.loop?`<span class="loop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>${s.loop}</span>`:''}</div>
+        </div>`).join('')}</div></div>
+      <div class="callout" style="margin-top:16px"><b>Prinsip:</b> proses yang sama berulang di setiap peringkat — Sekolah (JPMS) → PPD (JPMD) → JPN (JPMN) → KPM (JPMK). Data hanya dianggap rasmi selepas disahkan dalam mesyuarat jawatankuasa peringkat berkenaan.</div>`;
+  } else if(id==='pegawai'){
+    c.innerHTML=`<div class="card"><h3>Pegawai yang boleh dihubungi</h3>
+      ${SOP.contacts.map(ct=>`<h4>${ct.m}</h4><p>${ct.o}${ct.e?` · <a href="mailto:${ct.e}" style="color:var(--brass-deep);font-weight:600">${ct.e}</a>`:''}</p>`).join('')}</div>
+      <div class="card"><h3>Dokumen rujukan</h3><ul class="prose-list">${SOP.rujukan.map(r=>`<li>${r}</li>`).join('')}</ul></div>`;
+  }
+}
+function showLevel(id,el){
+  if(el){document.querySelectorAll('#lvlBar .lvl').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+  const lv=SOP.levels.find(l=>l.id===id);
+  document.getElementById('roleWrap').innerHTML=lv.roles.map(r=>`
+    <div class="role ${r.spot?'spot':''}">
+      <div class="role-head"><span class="tag">${r.tag}</span><h4>${r.title}</h4>${r.spot?'<span class="star">★ Fokus</span>':''}</div>
+      <div class="role-body"><ul class="prose-list">${r.duties.map(d=>`<li>${d}</li>`).join('')}</ul></div>
+    </div>`).join('');
+}
+
+/* ================= KALENDAR RENDER ================= */
+function renderCal(){
+  document.getElementById('calTabs').innerHTML=`<button class="tab active" onclick="calTab('jadual',this)">Jadual Bulanan</button><button class="tab" onclick="calTab('makluman',this)">Makluman Wajib</button>`;
+  const nowM=new Date().getMonth();
+  document.getElementById('monthGrid').innerHTML=CAL.map((m,i)=>{
+    const state=i<nowM?'past':(i===nowM?'now':'next');
+    const badge=state==='now'?'<span class="badge b-now">Bulan ini</span>':state==='past'?'<span class="badge b-done">Selesai</span>':'<span class="badge b-next">Akan datang</span>';
+    return `<div class="mo ${state}" id="mo-${i}">
+      <div class="mo-head"><div><div class="mm">${MONTHS[i]}</div><div class="dd">Tarikh akhir · ${m.end}</div></div>${badge}</div>
+      <div class="mo-body"><ul>${m.focus.map(f=>{const b=f.includes('SEGERA')||f.includes('Sesi &');return `<li>${f}</li>`}).join('')}</ul></div>
+    </div>`;
+  }).join('');
+  document.getElementById('cal-makluman').innerHTML=`<div class="callout"><b>Penting.</b> Fokus bulanan ialah garis panduan asas sahaja — tanggungjawab sebenar Guru Data ialah memastikan <b>semua</b> variabel MPS/EMIS sentiasa lengkap dan terkini.</div>`+
+    MAKLUMAN.map((k,i)=>`<div class="card"><h3>${i+1}. ${k.h}</h3><p>${k.b}</p></div>`).join('');
+}
+function calTab(id,el){
+  document.querySelectorAll('#calTabs .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  document.querySelectorAll('#kalendar .panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('cal-'+id).classList.add('active');
+}
+
+/* ================= MDV RENDER ================= */
+function showMdvHome(){
+  document.getElementById('mdvDetail').classList.add('hidden');
+  const h=document.getElementById('mdvHome');
+  h.classList.remove('hidden');
+  if(h.dataset.done)return;
+  h.innerHTML=`<div class="sec-head" style="margin-top:8px"><div class="kick">16 seksyen · ${totalBlocks()} entri</div><h2>Layari mengikut seksyen</h2><p>Ketuk seksyen untuk lihat semua variabel & jadual kod. Guna carian (🔍) untuk terus mencari mana-mana variabel.</p></div>
+   <div class="mdv-grid">${MDV.sections.map((s,i)=>`
+      <div class="mdv-sec" onclick="openMdvSec(${i})">
+        <div class="no">${romanOrNum(s)}</div>
+        <div class="mm"><b>${cleanTitle(s.title)}</b><span>${s.sub||''}</span><em>${s.blocks.length} entri · m/s ${s.startPage}–${s.endPage}</em></div>
+      </div>`).join('')}</div>`;
+  h.dataset.done='1';
+}
+function romanOrNum(s){ const m=s.title.match(/^(\d+)\./); return m?m[1]:'§'; }
+function cleanTitle(t){ return t.replace(/^\d+\.\s*/,''); }
+function totalBlocks(){ return MDV.sections.reduce((a,s)=>a+s.blocks.length,0); }
+function openMdvSec(i){
+  const s=MDV.sections[i];
+  document.getElementById('mdvHome').classList.add('hidden');
+  const d=document.getElementById('mdvDetail');
+  d.classList.remove('hidden');
+  d.innerHTML=`<div class="crumb" style="border-color:var(--line-strong);color:var(--navy-2);margin:8px 0 18px" onclick="showMdvHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Semua seksyen</div>
+    <div class="sec-head" style="margin-top:0"><div class="kick">Seksyen ${romanOrNum(s)} · ${s.blocks.length} entri</div><h2>${cleanTitle(s.title)}</h2><p>${s.sub||''} · Manual Definisi Variabel MPS (m/s ${s.startPage}–${s.endPage}).</p></div>
+    ${s.blocks.map((b,bi)=>`
+      <div class="blk" id="blk-${i}-${bi}">
+        <div class="blk-head" onclick="document.getElementById('blk-${i}-${bi}').classList.toggle('open')">
+          <b>${b.title}</b><span class="pg">m/s ${b.page}</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="blk-body"><pre>${esc(b.text)}</pre></div>
+      </div>`).join('')}`;
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ================= SEARCH ================= */
+let SEARCH_INDEX=null;
+function buildIndex(){
+  if(SEARCH_INDEX)return;
+  const idx=[];
+  // SOP roles
+  SOP.levels.forEach(l=>l.roles.forEach(r=>{
+    idx.push({type:'SOP · '+l.name,title:r.title,text:r.duties.join(' '),go:()=>{go('sop');setTimeout(()=>{sopTab('peranan',document.querySelector('#sopTabs .tab'));showLevel(l.id);},60);}});
+  }));
+  SOP.committees.forEach(cm=>idx.push({type:'SOP · Jawatankuasa',title:cm.name,text:cm.note+' '+cm.members.join(' '),go:()=>{go('sop');setTimeout(()=>{const t=[...document.querySelectorAll('#sopTabs .tab')].find(x=>x.textContent.includes('Jawatankuasa'));sopTab('jk',t);},60);}}));
+  idx.push({type:'SOP · Carta Alir',title:'Carta Alir Proses Kerja',text:SOP.flow.steps.map(s=>s.label+' '+(s.d||'')).join(' '),go:()=>{go('sop');setTimeout(()=>{const t=[...document.querySelectorAll('#sopTabs .tab')].find(x=>x.textContent.includes('Carta'));sopTab('alir',t);},60);}});
+  // Calendar
+  CAL.forEach((m,i)=>idx.push({type:'Kalendar 2026',title:MONTHS[i]+' — tarikh akhir '+m.end,text:m.focus.join(' '),go:()=>{go('kalendar');setTimeout(()=>{const el=document.getElementById('mo-'+i);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},80);}}));
+  MAKLUMAN.forEach(k=>idx.push({type:'Kalendar · Makluman',title:k.h,text:k.b.replace(/<[^>]+>/g,''),go:()=>{go('kalendar');setTimeout(()=>{const t=[...document.querySelectorAll('#calTabs .tab')].find(x=>x.textContent.includes('Makluman'));calTab('makluman',t);},60);}}));
+  // MDV blocks
+  MDV.sections.forEach((s,si)=>s.blocks.forEach((b,bi)=>{
+    idx.push({type:'MDV · '+cleanTitle(s.title),title:b.title,text:b.text,go:()=>{go('mdv');setTimeout(()=>{openMdvSec(si);setTimeout(()=>{const el=document.getElementById('blk-'+si+'-'+bi);if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'center'});}},80);},60);}});
+  }));
+  SEARCH_INDEX=idx;
+}
+function openSearch(pre){
+  buildIndex();
+  document.getElementById('ov').classList.add('open');
+  const inp=document.getElementById('ovInput');
+  if(typeof pre==='string'){inp.value=pre;}
+  setTimeout(()=>inp.focus(),40);
+  runSearch();
+}
+function closeSearch(){document.getElementById('ov').classList.remove('open');}
+function runSearch(){
+  const q=document.getElementById('ovInput').value.trim().toLowerCase();
+  const res=document.getElementById('ovRes');
+  if(q.length<2){res.innerHTML='<div class="ov-hint">Taip untuk mula mencari — contoh: <b>gred sekolah</b>, <b>guru data</b>, <b>asrama</b>, <b>BIMLTK</b>.</div>';return;}
+  const terms=q.split(/\s+/);
+  const hits=[];
+  for(const it of SEARCH_INDEX){
+    const hay=(it.title+' '+it.text).toLowerCase();
+    let score=0,ok=true;
+    for(const t of terms){ if(!hay.includes(t)){ok=false;break;} score+=(it.title.toLowerCase().includes(t)?3:1); }
+    if(ok)hits.push({it,score});
+  }
+  hits.sort((a,b)=>b.score-a.score);
+  if(!hits.length){res.innerHTML='<div class="ov-hint">Tiada padanan untuk “'+esc(q)+'”. Cuba kata kunci lain.</div>';return;}
+  res.innerHTML='<div class="res-count">'+hits.length+' padanan</div>'+hits.slice(0,40).map((h,i)=>{
+    const it=h.it; const sn=snippet(it.text,terms);
+    return `<div class="res" data-i="${i}" onclick="pick(${i})"><div class="rt">${it.type}</div><b>${hl(it.title,terms)}</b><div class="sn">${sn}</div></div>`;
+  }).join('');
+  window._hits=hits;
+}
+function snippet(text,terms){
+  const low=text.toLowerCase();let pos=-1;
+  for(const t of terms){const p=low.indexOf(t);if(p>=0&&(pos<0||p<pos))pos=p;}
+  if(pos<0)pos=0;
+  let start=Math.max(0,pos-40);
+  let s=(start>0?'…':'')+text.slice(start,start+150).replace(/\s+/g,' ')+'…';
+  return hl(s,terms);
+}
+function hl(s,terms){let out=esc(s);for(const t of terms){if(t.length<2)continue;out=out.replace(new RegExp('('+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>');}return out;}
+function pick(i){const h=window._hits[i];closeSearch();h.it.go();}
+
+/* keyboard */
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();openSearch();}
+  if(e.key==='Escape')closeSearch();
+});
+document.getElementById('ovInput').addEventListener('input',runSearch);
+
+
+/* ================= BACKEND & AUTH ================= */
+/* Tampal URL Web App GAS (/exec) di bawah selepas deploy backend: */
+const API = 'PASTE_GAS_WEB_APP_URL_HERE';
+
+let AUTH = null;        // {token, role, id, nama, kodPPD, namaPPD, namaSekolah}
+let curRole = 'guru';
+const STATUSES = ['Belum Hantar','Menunggu Semakan','Sedang Diproses','Selesai','Perlu Pembetulan'];
+function statusClass(s){return {'Belum Hantar':'st-belum','Menunggu Semakan':'st-tunggu','Sedang Diproses':'st-proses','Selesai':'st-selesai','Perlu Pembetulan':'st-betul'}[s]||'st-belum';}
+function val(id){const el=document.getElementById(id);return el?el.value:'';}
+function offlineCard(msg){return `<div class="offline-note"><b>Tiada sambungan ke pelayan.</b><br>Ruang ini memerlukan talian internet. Bahagian rujukan (SOP, Kalendar, Kamus) tetap boleh digunakan tanpa talian.<br><small style="opacity:.65">${esc(msg||'')}</small></div>`;}
+
+async function api(action, payload){
+  if(!API || API.indexOf('PASTE_')===0) throw new Error('URL backend (GAS) belum ditetapkan dalam index.html');
+  const res = await fetch(API, { method:'POST', body: JSON.stringify(Object.assign({action:action}, payload||{})) });
+  let data; try{ data = await res.json(); }catch(e){ throw new Error('Respons pelayan tidak sah'); }
+  if(!data.ok) throw new Error(data.error||'Ralat tidak diketahui');
+  return data;
+}
+
+/* ---- login ---- */
+function setRole(r, el){
+  curRole=r;
+  document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const map={
+    guru:['Kod Sekolah','cth: CEA4060','PIN pertama = Kod Sekolah anda. Anda akan diminta tukar selepas log masuk pertama.'],
+    ppd:['Kod PPD','cth: 0201','Gunakan akaun PPD yang disediakan Admin JPN.'],
+    admin:['Nama Pengguna','admin','Akaun pentadbir JPN sahaja.']
+  };
+  document.getElementById('idLabel').textContent=map[r][0];
+  document.getElementById('loginId').placeholder=map[r][1];
+  document.getElementById('loginHint').textContent=map[r][2];
+  document.getElementById('loginMsg').textContent='';
+}
+async function doLogin(){
+  const id=val('loginId').trim(), pin=val('loginPin'), msg=document.getElementById('loginMsg');
+  if(!id||!pin){msg.textContent='Sila isi kedua-dua ruang.';return;}
+  const btn=document.getElementById('loginBtn'); btn.disabled=true; btn.textContent='Menyemak…';
+  try{
+    const d=await api('login',{role:curRole, id:id, pin:pin});
+    AUTH=Object.assign({token:d.token, role:d.role}, d.profile||{});
+    localStorage.setItem('emis_auth', JSON.stringify(AUTH));
+    enterApp();
+    if(d.mestiTukar) openPinModal(true);
+  }catch(e){ msg.textContent=e.message||'Log masuk gagal.'; }
+  btn.disabled=false; btn.textContent='Log Masuk';
+}
+function restoreAuth(){ try{const s=localStorage.getItem('emis_auth'); if(s){AUTH=JSON.parse(s); return true;}}catch(e){} return false; }
+function logout(){
+  AUTH=null; localStorage.removeItem('emis_auth');
+  document.getElementById('userChip').classList.add('hidden');
+  document.getElementById('gate').classList.remove('hidden');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('home').classList.add('active');
+  location.hash='';
+}
+function enterApp(){
+  document.getElementById('gate').classList.add('hidden');
+  const chip=document.getElementById('userChip'); chip.classList.remove('hidden');
+  const roleName={guru:'Guru Data',ppd:'Pegawai PPD',admin:'Admin JPN'}[AUTH.role];
+  document.getElementById('whoName').textContent=(AUTH.nama||AUTH.id)+' · '+roleName;
+  buildRoleZone();
+  go('home');
+}
+
+/* ---- role zone on home ---- */
+function buildRoleZone(){
+  const z=document.getElementById('roleZone'); if(!z||!AUTH)return;
+  const titles={guru:'Tugas Guru Data',ppd:'Pantauan Daerah',admin:'Pentadbiran JPN'};
+  let card='';
+  if(AUTH.role==='guru'){
+    card=roleCard('lantikan','Surat Lantikan Saya','Isi & semak status permohonan Surat Lantikan Guru Data anda.','<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>');
+  } else if(AUTH.role==='ppd'){
+    card=roleCard('pantauPPD','Pantauan Sekolah Daerah','Status penghantaran Surat Lantikan bagi sekolah dalam '+(AUTH.namaPPD||'daerah anda')+'.','<path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/>');
+  } else {
+    card=roleCard('dashLantikan','Dashboard Surat Lantikan','Semak semua permohonan seluruh negeri, kemas kini status & eksport senarai.','<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/>');
+  }
+  z.innerHTML=`<div class="wrap"><div class="sec-head"><div class="kick">Ruang anda</div><h2>${titles[AUTH.role]}</h2></div>${card}
+    <div style="margin-top:12px"><a href="#" onclick="openPinModal(false);return false" style="font-size:13px;color:var(--brass-deep);font-weight:600">Tukar PIN</a></div></div>`;
+}
+function roleCard(view,title,desc,svg){
+  return `<div class="pillar" style="max-width:540px" data-go="${view}"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></div><h3>${title}</h3><p>${desc}</p><div class="foot">Buka <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></div>`;
+}
+
+/* ---- PIN change ---- */
+let PIN_FORCED=false;
+function openPinModal(forced){
+  PIN_FORCED=!!forced;
+  document.getElementById('pinModal').classList.add('open');
+  ['pinOld','pinNew','pinNew2'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('pinMsg').textContent='';
+  document.getElementById('pinSkip').innerHTML = forced ? 'PIN lalai mesti ditukar sebelum meneruskan.' : '<a href="#" onclick="closePin();return false" style="color:var(--brass-deep);font-weight:600">Batal</a>';
+}
+function closePin(){ if(PIN_FORCED)return; document.getElementById('pinModal').classList.remove('open'); }
+async function submitPin(){
+  const o=val('pinOld'),n=val('pinNew'),n2=val('pinNew2'),m=document.getElementById('pinMsg');
+  if(n.length<6){m.textContent='PIN baharu mesti sekurang-kurangnya 6 aksara.';return;}
+  if(n!==n2){m.textContent='PIN baharu tidak sepadan.';return;}
+  const btn=document.getElementById('pinBtn'); btn.disabled=true; btn.textContent='Menyimpan…';
+  try{ await api('changePin',{token:AUTH.token,oldPin:o,newPin:n}); PIN_FORCED=false; document.getElementById('pinModal').classList.remove('open'); alert('PIN berjaya ditukar.'); }
+  catch(e){ m.textContent=e.message; }
+  btn.disabled=false; btn.textContent='Simpan PIN';
+}
+
+/* ---- Guru Data: Surat Lantikan ---- */
+async function loadMyLantikan(){
+  const b=document.getElementById('lantikanBody'); b.innerHTML='<div class="card"><p>Memuatkan…</p></div>';
+  try{ const d=await api('getMyLantikan',{token:AUTH.token}); renderLantikanForm(d.record); }
+  catch(e){ b.innerHTML=offlineCard(e.message); }
+}
+function renderLantikanForm(rec){
+  rec=rec||{}; const status=rec.status||'Belum Hantar';
+  document.getElementById('lantikanBody').innerHTML=`
+   <div class="status-banner"><div style="flex:1"><div class="lbl">Status permohonan</div><h3>${esc(AUTH.namaSekolah||AUTH.id)}</h3></div><span class="st ${statusClass(status)}">${status}</span></div>
+   <div class="card"><h3>Butiran Guru Data</h3>
+     <div class="form-grid">
+       <div class="fld"><label>Kod Sekolah</label><input class="ro" value="${esc(AUTH.id)}" readonly></div>
+       <div class="fld"><label>PPD</label><input class="ro" value="${esc(AUTH.namaPPD||'-')}" readonly></div>
+       <div class="fld full"><label>Nama Sekolah</label><input class="ro" value="${esc(AUTH.namaSekolah||'-')}" readonly></div>
+       <div class="fld"><label>Nama Penuh Guru Data *</label><input id="lkNama" value="${esc(rec.nama||'')}" placeholder="Nama seperti dalam KP"></div>
+       <div class="fld"><label>No. Kad Pengenalan *</label><input id="lkKP" value="${esc(rec.kp||'')}" placeholder="cth: 880101015123"></div>
+       <div class="fld"><label>Gred / Jawatan</label><input id="lkGred" value="${esc(rec.gred||'')}" placeholder="cth: DG44"></div>
+       <div class="fld"><label>Tarikh Dilantik sebagai Guru Data</label><input id="lkTarikh" type="date" value="${esc(rec.tarikh||'')}"></div>
+       <div class="fld"><label>Sudah ada Surat Lantikan?</label><select id="lkAda"><option value="Tidak"${rec.ada==='Tidak'?' selected':''}>Belum ada</option><option value="Ya"${rec.ada==='Ya'?' selected':''}>Sudah ada</option></select></div>
+       <div class="fld"><label>No. Surat Lantikan (jika ada)</label><input id="lkNoSurat" value="${esc(rec.noSurat||'')}" placeholder="Kosongkan jika belum ada"></div>
+       <div class="fld full"><label>Catatan</label><textarea id="lkCatatan" placeholder="Sebarang maklumat tambahan…">${esc(rec.catatan||'')}</textarea></div>
+     </div>
+     <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+       <button class="btn-sm" onclick="submitLantikan()">${status==='Belum Hantar'?'Hantar untuk Semakan':'Kemas Kini Butiran'}</button>
+       ${rec.tarikhKemas?`<span style="font-size:12px;color:var(--muted)">Kemas kini terakhir: ${esc(rec.tarikhKemas)}</span>`:''}
+     </div>
+     ${rec.adminCatatan?`<div class="callout" style="margin-top:14px"><b>Maklum balas JPN:</b> ${esc(rec.adminCatatan)}</div>`:''}
+   </div>
+   <div class="callout"><b>Nota privasi.</b> No. Kad Pengenalan diguna semata-mata untuk penyediaan Surat Lantikan oleh JPN dan dilindungi di bawah Akta 709.</div>`;
+}
+async function submitLantikan(){
+  const nama=val('lkNama').trim(), kp=val('lkKP').trim();
+  if(!nama||!kp){alert('Sila isi Nama Penuh dan No. Kad Pengenalan.');return;}
+  const data={nama:nama,kp:kp,gred:val('lkGred'),tarikh:val('lkTarikh'),ada:val('lkAda'),noSurat:val('lkNoSurat'),catatan:val('lkCatatan')};
+  try{ await api('submitLantikan',{token:AUTH.token,data:data}); alert('Berjaya dihantar. Status kini: Menunggu Semakan JPN.'); loadMyLantikan(); }
+  catch(e){ alert('Gagal menghantar: '+e.message); }
+}
+
+/* ---- Admin dashboard ---- */
+let ADMIN_DATA=[];
+async function loadAdmin(){
+  const b=document.getElementById('adminBody'); b.innerHTML='<div class="card"><p>Memuatkan…</p></div>';
+  try{ const d=await api('adminList',{token:AUTH.token}); ADMIN_DATA=d.rows||[]; renderAdmin(); }
+  catch(e){ b.innerHTML=offlineCard(e.message); }
+}
+function renderAdmin(){
+  const rows=ADMIN_DATA;
+  const total=rows.length;
+  const hantar=rows.filter(r=>r.status&&r.status!=='Belum Hantar').length;
+  const tunggu=rows.filter(r=>r.status==='Menunggu Semakan').length;
+  const selesai=rows.filter(r=>r.status==='Selesai').length;
+  const ppds=[...new Set(rows.map(r=>r.namaPPD).filter(Boolean))].sort();
+  document.getElementById('adminBody').innerHTML=`
+   <div class="facts">
+     <div class="fact"><b>${total}</b><span>Sekolah berdaftar</span></div>
+     <div class="fact"><b>${hantar}</b><span>Telah hantar</span></div>
+     <div class="fact"><b>${tunggu}</b><span>Menunggu semakan</span></div>
+     <div class="fact"><b>${selesai}</b><span>Selesai</span></div>
+   </div>
+   <div class="toolbar">
+     <select id="fPPD" onchange="renderAdminTable()"><option value="">Semua PPD</option>${ppds.map(p=>`<option>${esc(p)}</option>`).join('')}</select>
+     <select id="fStatus" onchange="renderAdminTable()"><option value="">Semua status</option>${STATUSES.map(s=>`<option>${s}</option>`).join('')}</select>
+     <input id="fQ" placeholder="Cari sekolah / nama / KP…" oninput="renderAdminTable()">
+     <button class="btn-sm ghost" onclick="exportCSV()">Eksport CSV</button>
+   </div>
+   <div id="adminTable"></div>`;
+  renderAdminTable();
+}
+function adminFiltered(){
+  const fp=val('fPPD'),fs=val('fStatus'),fq=(val('fQ')||'').toLowerCase();
+  return ADMIN_DATA.filter(r=>{
+    if(fp&&r.namaPPD!==fp)return false;
+    if(fs&&(r.status||'Belum Hantar')!==fs)return false;
+    if(fq){const h=(r.kod+' '+(r.namaSekolah||'')+' '+(r.nama||'')+' '+(r.kp||'')).toLowerCase();if(h.indexOf(fq)<0)return false;}
+    return true;
+  });
+}
+function renderAdminTable(){
+  const rows=adminFiltered(), c=document.getElementById('adminTable');
+  if(!rows.length){c.innerHTML='<div class="empty">Tiada rekod sepadan.</div>';return;}
+  c.innerHTML=`<div class="dwrap"><table class="dtable">
+    <thead><tr><th>Sekolah</th><th>PPD</th><th>Guru Data</th><th>No. KP</th><th>Gred</th><th>Surat</th><th>Status</th></tr></thead>
+    <tbody>${rows.map(r=>{const st=r.status||'Belum Hantar';
+      return `<tr>
+        <td><b>${esc(r.namaSekolah||r.kod)}</b><br><span style="font-family:var(--mono);font-size:11px">${esc(r.kod)}</span></td>
+        <td>${esc(r.namaPPD||'-')}</td>
+        <td>${esc(r.nama||'—')}</td>
+        <td>${esc(r.kp||'—')}</td>
+        <td>${esc(r.gred||'—')}</td>
+        <td>${r.ada==='Ya'?'<span class="st st-selesai">Ada</span>':'<span class="st st-belum">Belum</span>'}</td>
+        <td>${st==='Belum Hantar'?'<span class="st st-belum">Belum Hantar</span>':`<select class="stsel" data-kod="${esc(r.kod)}" onchange="updateStatus(this)">${['Menunggu Semakan','Sedang Diproses','Selesai','Perlu Pembetulan'].map(s=>`<option${s===st?' selected':''}>${s}</option>`).join('')}</select>`}</td>
+      </tr>`;}).join('')}</tbody></table></div>`;
+}
+async function updateStatus(sel){
+  const kod=sel.getAttribute('data-kod'), status=sel.value;
+  try{ await api('updateStatus',{token:AUTH.token,kod:kod,status:status}); const r=ADMIN_DATA.find(x=>x.kod===kod); if(r)r.status=status; }
+  catch(e){ alert('Gagal kemas kini: '+e.message); }
+}
+function exportCSV(){
+  const rows=adminFiltered();
+  const head=['Kod Sekolah','Nama Sekolah','PPD','Nama Guru Data','No KP','Gred','Tarikh Dilantik','Ada Surat','No Surat','Status','Catatan','Tarikh Kemas'];
+  const body=rows.map(r=>[r.kod,r.namaSekolah,r.namaPPD,r.nama,r.kp,r.gred,r.tarikh,r.ada,r.noSurat,r.status,r.catatan,r.tarikhKemas].map(csvCell).join(','));
+  const csv=[head.join(',')].concat(body).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='surat-lantikan-guru-data.csv'; a.click();
+}
+function csvCell(v){v=(v==null?'':String(v));return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+
+/* ---- PPD monitoring (read-only, no KP) ---- */
+async function loadPPD(){
+  document.getElementById('ppdTitle').textContent='Pantauan Sekolah — '+(AUTH.namaPPD||'Daerah');
+  const b=document.getElementById('ppdBody'); b.innerHTML='<div class="card"><p>Memuatkan…</p></div>';
+  try{ const d=await api('ppdList',{token:AUTH.token}); renderPPD(d.rows||[]); }
+  catch(e){ b.innerHTML=offlineCard(e.message); }
+}
+function renderPPD(rows){
+  window._ppd=rows;
+  const total=rows.length, hantar=rows.filter(r=>r.status&&r.status!=='Belum Hantar').length, selesai=rows.filter(r=>r.status==='Selesai').length;
+  document.getElementById('ppdBody').innerHTML=`
+   <div class="facts">
+     <div class="fact"><b>${total}</b><span>Sekolah</span></div>
+     <div class="fact"><b>${hantar}</b><span>Telah hantar</span></div>
+     <div class="fact"><b>${total-hantar}</b><span>Belum hantar</span></div>
+     <div class="fact"><b>${selesai}</b><span>Selesai</span></div>
+   </div>
+   <div class="toolbar"><input id="pQ" placeholder="Cari sekolah / nama…" oninput="ppdFilter()"></div>
+   <div id="ppdTable"></div>`;
+  ppdFilter();
+}
+function ppdFilter(){
+  const q=(val('pQ')||'').toLowerCase(); let rows=window._ppd||[];
+  if(q)rows=rows.filter(r=>(r.kod+' '+(r.namaSekolah||'')+' '+(r.nama||'')).toLowerCase().indexOf(q)>=0);
+  const c=document.getElementById('ppdTable');
+  if(!rows.length){c.innerHTML='<div class="empty">Tiada rekod.</div>';return;}
+  c.innerHTML=`<div class="dwrap"><table class="dtable">
+    <thead><tr><th>Sekolah</th><th>Guru Data</th><th>Surat</th><th>Status</th><th>Kemas kini</th></tr></thead>
+    <tbody>${rows.map(r=>{const st=r.status||'Belum Hantar';return `<tr>
+      <td><b>${esc(r.namaSekolah||r.kod)}</b><br><span style="font-family:var(--mono);font-size:11px">${esc(r.kod)}</span></td>
+      <td>${esc(r.nama||'—')}</td>
+      <td>${r.ada==='Ya'?'<span class="st st-selesai">Ada</span>':'<span class="st st-belum">Belum</span>'}</td>
+      <td><span class="st ${statusClass(st)}">${st}</span></td>
+      <td>${esc(r.tarikhKemas||'—')}</td></tr>`;}).join('')}</tbody></table></div>`;
+}
+
+/* delegated navigation for role cards */
+document.addEventListener('click',function(e){const t=e.target.closest('[data-go]');if(t){e.preventDefault();go(t.getAttribute('data-go'));}});
+
+/* ================= INIT ================= */
+document.getElementById('mdvCount').textContent=totalBlocks()+' entri';
+initNow(); renderSOP(); renderCal(); setRole('guru');
+document.getElementById('loginPin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+if(restoreAuth()){ enterApp(); const h=location.hash.slice(1); if(h&&document.getElementById(h))go(h); }
+else { document.getElementById('gate').classList.remove('hidden'); }
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+</body>
+</html>
