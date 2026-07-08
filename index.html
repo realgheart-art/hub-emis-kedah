@@ -11,11 +11,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="EMIS Kedah">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="color-scheme" content="light">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
+  color-scheme: light;
   --navy:#0d1f38; --navy-2:#14304f; --navy-3:#1d3f63;
   --brass:#c2a15e; --brass-2:#d8bd85; --brass-deep:#9a7a3f;
   --cream:#f5efe2; --paper:#fbf8f1; --paper-2:#f2ecdd;
@@ -109,8 +111,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .pillar .ic svg{width:22px;height:22px;stroke:var(--brass-2)}
 .pillar h3{font-family:var(--disp);font-weight:600;font-size:21px;color:var(--navy);line-height:1.15}
 .pillar p{color:var(--ink-soft);font-size:13.5px;margin-top:9px;flex:1}
-.pillar .foot{margin-top:16px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy-2)}
-.pillar .foot svg{width:16px;height:16px;transition:transform .2s}
+.pillar .foot{margin-top:16px;align-self:flex-start;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#f5efe2!important;background:#0d1f38;padding:9px 16px;border-radius:999px;transition:.2s}
+.pillar .foot svg{width:16px;height:16px;transition:transform .2s;stroke:#d8bd85}
+.pillar:hover .foot{background:#14304f}
 .pillar:hover .foot svg{transform:translateX(4px)}
 .pillar .cnt{position:absolute;top:24px;right:22px;font-size:11.5px;color:var(--muted);font-weight:600}
 
