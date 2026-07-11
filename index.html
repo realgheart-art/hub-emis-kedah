@@ -111,8 +111,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .pillar .ic svg{width:22px;height:22px;stroke:var(--brass-2)}
 .pillar h3{font-family:var(--disp);font-weight:600;font-size:21px;color:var(--navy);line-height:1.15}
 .pillar p{color:var(--ink-soft);font-size:13.5px;margin-top:9px;flex:1}
-.pillar .foot{margin-top:16px;align-self:flex-start;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#f5efe2!important;background:#0d1f38;padding:9px 16px;border-radius:999px;transition:.2s}
-.pillar .foot svg{width:16px;height:16px;transition:transform .2s;stroke:#d8bd85}
+.pillar .foot{margin-top:16px;align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:800;letter-spacing:.3px;color:#e8c579!important;background:#0d1f38;border:1.5px solid #c2a15e;padding:10px 18px;border-radius:999px;transition:.2s}
+.pillar .foot svg{width:17px;height:17px;transition:transform .2s;stroke:#e8c579}
 .pillar:hover .foot{background:#14304f}
 .pillar:hover .foot svg{transform:translateX(4px)}
 .pillar .cnt{position:absolute;top:24px;right:22px;font-size:11.5px;color:var(--muted);font-weight:600}
@@ -282,6 +282,17 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 /* utility */
 .hidden{display:none!important}
 
+/* ===== Pertahanan terhadap 'Force Dark' pelayar (Android/Samsung) =====
+   Elemen navy + teks emas dikunci warna supaya tidak ditokok pelayar. */
+.pillar .foot, .flow, .subhead, .hero, .topbar, .foot, .org .node,
+.status-banner .st, .btn-sm{ forced-color-adjust: none; }
+.pillar .foot{ color:#e8c579!important; background:#0d1f38!important; }
+.pillar .foot svg{ stroke:#e8c579!important; }
+@media (prefers-color-scheme: dark){
+  .pillar .foot{ color:#e8c579!important; background:#0d1f38!important; border-color:#c2a15e!important; }
+  .pillar .foot svg{ stroke:#e8c579!important; }
+}
+
 /* ===== AUTH / ROLE / PWA ===== */
 .gate{position:fixed;inset:0;z-index:200;background:radial-gradient(120% 120% at 80% 0,rgba(29,63,99,.6),transparent 55%),var(--navy);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}
 .gate.hidden{display:none}
@@ -341,6 +352,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .dtable td b{color:var(--ink)}
 .dtable tr:hover td{background:var(--paper-2)}
 select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid var(--line-strong);border-radius:8px;background:#fff;color:var(--ink)}
+.btn-reset{font-family:inherit;font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:8px;background:var(--paper-2);color:var(--navy);border:1px solid var(--line-strong);white-space:nowrap;cursor:pointer;transition:.15s}
+.btn-reset:hover{background:var(--navy);color:var(--cream);border-color:var(--navy)}
+.btn-reset:disabled{opacity:.6;cursor:default}
+.btn-reset.done{background:#eaf5ee;color:#3f7d54;border-color:#a9d6ba}
 .modal{position:fixed;inset:0;z-index:210;background:rgba(13,31,56,.62);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:24px}
 .modal.open{display:flex}
 .modal-card{background:var(--paper);border-radius:var(--r);max-width:390px;width:100%;padding:28px;box-shadow:var(--shadow-lg)}
@@ -1122,13 +1137,13 @@ async function loadAdmin(){
   try{ const d=await api('adminList',{token:AUTH.token}); ADMIN_DATA=d.rows||[]; renderAdmin(); }
   catch(e){ b.innerHTML=offlineCard(e.message); }
 }
+let ADMIN_TAB='sekolah', PPD_DATA=null;
 function renderAdmin(){
   const rows=ADMIN_DATA;
   const total=rows.length;
   const hantar=rows.filter(r=>r.status&&r.status!=='Belum Hantar').length;
   const tunggu=rows.filter(r=>r.status==='Menunggu Semakan').length;
   const selesai=rows.filter(r=>r.status==='Selesai').length;
-  const ppds=[...new Set(rows.map(r=>r.namaPPD).filter(Boolean))].sort();
   document.getElementById('adminBody').innerHTML=`
    <div class="facts">
      <div class="fact"><b>${total}</b><span>Sekolah berdaftar</span></div>
@@ -1136,14 +1151,39 @@ function renderAdmin(){
      <div class="fact"><b>${tunggu}</b><span>Menunggu semakan</span></div>
      <div class="fact"><b>${selesai}</b><span>Selesai</span></div>
    </div>
-   <div class="toolbar">
-     <select id="fPPD" onchange="renderAdminTable()"><option value="">Semua PPD</option>${ppds.map(p=>`<option>${esc(p)}</option>`).join('')}</select>
-     <select id="fStatus" onchange="renderAdminTable()"><option value="">Semua status</option>${STATUSES.map(s=>`<option>${s}</option>`).join('')}</select>
-     <input id="fQ" placeholder="Cari sekolah / nama / KP…" oninput="renderAdminTable()">
-     <button class="btn-sm ghost" onclick="exportCSV()">Eksport CSV</button>
+   <div class="tabs" style="margin:18px 0 4px">
+     <button class="tab ${ADMIN_TAB==='sekolah'?'active':''}" style="color:${ADMIN_TAB==='sekolah'?'':'var(--ink-soft)'}" onclick="adminTab('sekolah',this)">Sekolah & Surat Lantikan</button>
+     <button class="tab ${ADMIN_TAB==='ppd'?'active':''}" style="color:${ADMIN_TAB==='ppd'?'':'var(--ink-soft)'}" onclick="adminTab('ppd',this)">Akaun PPD</button>
    </div>
-   <div id="adminTable"></div>`;
-  renderAdminTable();
+   <div id="adminPane"></div>`;
+  renderAdminPane();
+}
+function adminTab(t,el){
+  ADMIN_TAB=t;
+  document.querySelectorAll('#adminBody .tab').forEach(x=>{x.classList.remove('active');x.style.color='var(--ink-soft)';});
+  if(el){el.classList.add('active');el.style.color='';}
+  renderAdminPane();
+}
+function renderAdminPane(){
+  const pane=document.getElementById('adminPane');
+  if(ADMIN_TAB==='sekolah'){
+    const ppds=[...new Set(ADMIN_DATA.map(r=>r.namaPPD).filter(Boolean))].sort();
+    pane.innerHTML=`<div class="toolbar">
+       <select id="fPPD" onchange="renderAdminTable()"><option value="">Semua PPD</option>${ppds.map(p=>`<option>${esc(p)}</option>`).join('')}</select>
+       <select id="fStatus" onchange="renderAdminTable()"><option value="">Semua status</option>${STATUSES.map(s=>`<option>${s}</option>`).join('')}</select>
+       <input id="fQ" placeholder="Cari sekolah / nama / KP…" oninput="renderAdminTable()">
+       <button class="btn-sm ghost" onclick="exportCSV()">Eksport CSV</button>
+     </div>
+     <div id="adminTable"></div>`;
+    renderAdminTable();
+  } else {
+    pane.innerHTML=`<div class="toolbar"><input id="pQ2" placeholder="Cari PPD…" oninput="renderPpdAdminTable()"></div><div id="ppdAdminTable"></div>`;
+    if(PPD_DATA){ renderPpdAdminTable(); }
+    else {
+      document.getElementById('ppdAdminTable').innerHTML='<div class="card"><p>Memuatkan…</p></div>';
+      api('adminPpdList',{token:AUTH.token}).then(d=>{PPD_DATA=d.rows||[];renderPpdAdminTable();}).catch(e=>{document.getElementById('ppdAdminTable').innerHTML=offlineCard(e.message);});
+    }
+  }
 }
 function adminFiltered(){
   const fp=val('fPPD'),fs=val('fStatus'),fq=(val('fQ')||'').toLowerCase();
@@ -1158,7 +1198,7 @@ function renderAdminTable(){
   const rows=adminFiltered(), c=document.getElementById('adminTable');
   if(!rows.length){c.innerHTML='<div class="empty">Tiada rekod sepadan.</div>';return;}
   c.innerHTML=`<div class="dwrap"><table class="dtable">
-    <thead><tr><th>Sekolah</th><th>PPD</th><th>Guru Data</th><th>No. KP</th><th>Gred</th><th>Surat</th><th>Status</th></tr></thead>
+    <thead><tr><th>Sekolah</th><th>PPD</th><th>Guru Data</th><th>No. KP</th><th>Gred</th><th>Surat</th><th>Status</th><th>PIN</th></tr></thead>
     <tbody>${rows.map(r=>{const st=r.status||'Belum Hantar';
       return `<tr>
         <td><b>${esc(r.namaSekolah||r.kod)}</b><br><span style="font-family:var(--mono);font-size:11px">${esc(r.kod)}</span></td>
@@ -1168,7 +1208,34 @@ function renderAdminTable(){
         <td>${esc(r.gred||'—')}</td>
         <td>${r.ada==='Ya'?'<span class="st st-selesai">Ada</span>':'<span class="st st-belum">Belum</span>'}</td>
         <td>${st==='Belum Hantar'?'<span class="st st-belum">Belum Hantar</span>':`<select class="stsel" data-kod="${esc(r.kod)}" onchange="updateStatus(this)">${['Menunggu Semakan','Sedang Diproses','Selesai','Perlu Pembetulan'].map(s=>`<option${s===st?' selected':''}>${s}</option>`).join('')}</select>`}</td>
+        <td><button class="btn-reset" onclick="resetPin('guru','${esc(r.kod)}',this)">Reset PIN</button></td>
       </tr>`;}).join('')}</tbody></table></div>`;
+}
+function renderPpdAdminTable(){
+  const q=(val('pQ2')||'').toLowerCase();
+  let rows=(PPD_DATA||[]).filter(r=>!q||(r.kodPPD+' '+(r.namaPPD||'')).toLowerCase().indexOf(q)>=0);
+  const c=document.getElementById('ppdAdminTable');
+  if(!rows.length){c.innerHTML='<div class="empty">Tiada PPD.</div>';return;}
+  c.innerHTML=`<div class="dwrap"><table class="dtable">
+    <thead><tr><th>Kod PPD</th><th>Nama PPD</th><th>Status PIN</th><th>PIN</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td><span style="font-family:var(--mono)">${esc(r.kodPPD)}</span></td>
+      <td><b>${esc(r.namaPPD||'—')}</b></td>
+      <td>${r.aktif?'<span class="st st-selesai">PIN sendiri</span>':'<span class="st st-belum">Guna default</span>'}</td>
+      <td><button class="btn-reset" onclick="resetPin('ppd','${esc(r.kodPPD)}',this)">Reset PIN</button></td>
+    </tr>`).join('')}</tbody></table></div>`;
+}
+async function resetPin(jenis, kod, btn){
+  const label = jenis==='ppd' ? ('PPD '+kod) : ('sekolah '+kod);
+  const def = jenis==='ppd' ? 'Kod PPD' : 'Kod Sekolah';
+  if(!confirm('Reset PIN '+label+' kepada default ('+def+')?\n\nPengguna perlu tetapkan PIN baharu semasa log masuk berikutnya.'))return;
+  const old=btn.textContent; btn.disabled=true; btn.textContent='…';
+  try{
+    const d=await api('resetPin',{token:AUTH.token,jenis:jenis,kod:kod});
+    if(d.note==='belum-wujud'){ alert('Guru '+kod+' belum pernah log masuk — PIN pertama memang '+def+' (tiada apa perlu direset).'); }
+    else { btn.textContent='✓ Selesai'; btn.classList.add('done'); setTimeout(()=>{btn.textContent=old;btn.classList.remove('done');btn.disabled=false;},2500); return; }
+  }catch(e){ alert('Gagal reset: '+e.message); }
+  btn.disabled=false; btn.textContent=old;
 }
 async function updateStatus(sel){
   const kod=sel.getAttribute('data-kod'), status=sel.value;
