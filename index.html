@@ -356,6 +356,24 @@ select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid
 .btn-reset:hover{background:var(--navy);color:var(--cream);border-color:var(--navy)}
 .btn-reset:disabled{opacity:.6;cursor:default}
 .btn-reset.done{background:#eaf5ee;color:#3f7d54;border-color:#a9d6ba}
+/* install button */
+.install-btn{display:none;align-items:center;gap:7px;background:linear-gradient(140deg,var(--brass-2),var(--brass-deep));color:var(--navy)!important;font-weight:700;font-size:13px;padding:8px 14px;border-radius:999px;margin-left:8px;white-space:nowrap;forced-color-adjust:none;transition:.18s}
+.install-btn:hover{filter:brightness(1.05)}
+.install-btn svg{width:15px;height:15px;stroke:var(--navy)}
+.install-btn.show{display:inline-flex}
+@media(max-width:520px){.install-btn .lbl{display:none}.install-btn{padding:8px}}
+.ios-sheet{position:fixed;inset:0;z-index:220;background:rgba(13,31,56,.62);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center}
+.ios-sheet.open{display:flex}
+.ios-card{background:var(--paper);border-radius:20px 20px 0 0;width:100%;max-width:460px;padding:26px 24px 34px;box-shadow:var(--shadow-lg);animation:slideup .3s ease}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
+.ios-card h3{font-family:var(--disp);font-weight:600;font-size:20px;color:var(--navy);margin-bottom:6px}
+.ios-card p{font-size:13.5px;color:var(--ink-soft);margin-bottom:18px}
+.ios-step{display:flex;gap:13px;align-items:flex-start;margin-bottom:16px}
+.ios-step .n{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--brass-2);display:grid;place-items:center;font-family:var(--disp);font-weight:600;font-size:13px}
+.ios-step .t{font-size:14px;color:var(--ink);line-height:1.5}
+.ios-step .t b{color:var(--navy)}
+.ios-share{display:inline-flex;width:22px;height:22px;vertical-align:-5px;color:#0a84ff}
+.ios-card .close{width:100%;margin-top:8px;background:var(--navy);color:var(--cream);font-weight:600;font-size:14px;padding:12px;border-radius:11px;font-family:inherit}
 .modal{position:fixed;inset:0;z-index:210;background:rgba(13,31,56,.62);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:24px}
 .modal.open{display:flex}
 .modal-card{background:var(--paper);border-radius:var(--r);max-width:390px;width:100%;padding:28px;box-shadow:var(--shadow-lg)}
@@ -402,6 +420,18 @@ select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid
   </div>
 </div>
 
+<!-- ===== iOS INSTALL SHEET ===== -->
+<div id="iosSheet" class="ios-sheet" onclick="if(event.target===this)closeIos()">
+  <div class="ios-card">
+    <h3>Pasang di iPhone / iPad</h3>
+    <p>Safari tidak memasang secara automatik — ikut 3 langkah mudah ini:</p>
+    <div class="ios-step"><div class="n">1</div><div class="t">Tekan butang <b>Kongsi</b> <svg class="ios-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M8 7l4-4 4 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg> di bar bawah Safari.</div></div>
+    <div class="ios-step"><div class="n">2</div><div class="t">Skrol ke bawah, pilih <b>"Add to Home Screen"</b> / <b>"Skrin Utama"</b>.</div></div>
+    <div class="ios-step"><div class="n">3</div><div class="t">Tekan <b>"Add"</b> — ikon EMIS Kedah akan muncul di skrin utama anda.</div></div>
+    <button class="close" onclick="closeIos()">Faham</button>
+  </div>
+</div>
+
 
 <!-- ===== TOP BAR ===== -->
 <header class="topbar">
@@ -413,6 +443,10 @@ select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid
     <button class="top-search" onclick="openSearch()">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <span>Cari variabel, peranan, tugas…</span><kbd>/</kbd>
+    </button>
+    <button class="install-btn" id="installBtn" onclick="pasangApp()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+      <span class="lbl">Pasang App</span>
     </button>
     <div id="userChip" class="userchip hidden">
       <span class="who" id="whoName">—</span>
@@ -1291,9 +1325,42 @@ function ppdFilter(){
 /* delegated navigation for role cards */
 document.addEventListener('click',function(e){const t=e.target.closest('[data-go]');if(t){e.preventDefault();go(t.getAttribute('data-go'));}});
 
+/* ================= PASANG PWA ================= */
+let deferredPrompt=null;
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1); }
+function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true; }
+function showInstallBtn(){ const b=document.getElementById('installBtn'); if(b) b.classList.add('show'); }
+function hideInstallBtn(){ const b=document.getElementById('installBtn'); if(b) b.classList.remove('show'); }
+
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();          // halang mini-bar automatik; kita guna butang sendiri
+  deferredPrompt=e;
+  showInstallBtn();
+});
+window.addEventListener('appinstalled',function(){ deferredPrompt=null; hideInstallBtn(); });
+
+async function pasangApp(){
+  if(deferredPrompt){                        // Android / Chrome desktop
+    deferredPrompt.prompt();
+    try{ await deferredPrompt.userChoice; }catch(e){}
+    deferredPrompt=null; hideInstallBtn();
+    return;
+  }
+  if(isIOS()){ document.getElementById('iosSheet').classList.add('open'); return; }  // iPhone/iPad
+  // fallback (prompt belum sedia / pelayar lain)
+  alert('Untuk memasang: buka menu pelayar anda (⋮) dan pilih "Pasang aplikasi" / "Add to Home screen".');
+}
+function closeIos(){ document.getElementById('iosSheet').classList.remove('open'); }
+
+function initInstall(){
+  if(isStandalone()) return;                 // sudah dipasang — tak perlu butang
+  // iOS tiada beforeinstallprompt, jadi tunjuk butang terus supaya arahan boleh dipapar
+  if(isIOS()) showInstallBtn();
+}
+
 /* ================= INIT ================= */
 document.getElementById('mdvCount').textContent=totalBlocks()+' entri';
-initNow(); renderSOP(); renderCal(); setRole('guru');
+initNow(); renderSOP(); renderCal(); setRole('guru'); initInstall();
 document.getElementById('loginPin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 if(restoreAuth()){ enterApp(); const h=location.hash.slice(1); if(h&&document.getElementById(h))go(h); }
 else { document.getElementById('gate').classList.remove('hidden'); }
