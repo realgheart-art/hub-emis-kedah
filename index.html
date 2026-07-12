@@ -374,6 +374,35 @@ select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid
 .ios-step .t b{color:var(--navy)}
 .ios-share{display:inline-flex;width:22px;height:22px;vertical-align:-5px;color:#0a84ff}
 .ios-card .close{width:100%;margin-top:8px;background:var(--navy);color:var(--cream);font-weight:600;font-size:14px;padding:12px;border-radius:11px;font-family:inherit}
+/* wide modal (detail lantikan / borang bahan / embed) */
+.modal-card.wide{max-width:620px;max-height:86vh;overflow-y:auto}
+.modal-card.xl{max-width:960px;width:100%;max-height:90vh;padding:20px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13.5px;margin-bottom:16px}
+.kv dt{color:var(--muted);font-weight:600;white-space:nowrap}
+.kv dd{color:var(--ink)}
+.note-box{background:var(--paper-2);border-left:3px solid var(--brass);border-radius:0 10px 10px 0;padding:12px 15px;font-size:13.5px;color:var(--ink);white-space:pre-wrap;margin-bottom:16px}
+.note-box.empty{color:var(--muted);font-style:italic;border-left-color:var(--line-strong)}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.modal-actions .btn-sm{flex:1;min-width:120px;text-align:center}
+/* bahan cards */
+.bahan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.bahan{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px;cursor:pointer;transition:.2s;display:flex;flex-direction:column;position:relative}
+.bahan:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--line-strong)}
+.bahan .ic2{width:38px;height:38px;border-radius:10px;background:var(--navy);display:grid;place-items:center;margin-bottom:12px}
+.bahan .ic2 svg{width:19px;height:19px;stroke:var(--brass-2)}
+.bahan h4{font-family:var(--disp);font-weight:600;font-size:16px;color:var(--navy);line-height:1.2}
+.bahan p{font-size:12.5px;color:var(--ink-soft);margin-top:6px;flex:1}
+.bahan .tagj{margin-top:12px;font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--brass-deep)}
+.bahan .off{position:absolute;top:14px;right:14px;font-size:10px;font-weight:700;color:var(--muted);background:var(--paper-2);border:1px solid var(--line-strong);padding:3px 8px;border-radius:999px}
+.embed-wrap{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;background:#000;margin-bottom:12px}
+.embed-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+/* admin facts (6 kad, hidup ikut penapis) */
+#adminFacts{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+#adminFacts .fact{transition:.2s}
+.fact-ada{border-color:#a9d6ba!important;background:#f3faf5!important}
+.fact-ada b{color:#2f6b44!important}
+.fact-belum{border-color:#e6c6a3!important;background:#fdf7ef!important}
+.fact-belum b{color:#96652b!important}
 .modal{position:fixed;inset:0;z-index:210;background:rgba(13,31,56,.62);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:24px}
 .modal.open{display:flex}
 .modal-card{background:var(--paper);border-radius:var(--r);max-width:390px;width:100%;padding:28px;box-shadow:var(--shadow-lg)}
@@ -418,6 +447,11 @@ select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid
     <button class="btn" id="pinBtn" onclick="submitPin()">Simpan PIN</button>
     <p class="hint" id="pinSkip"></p>
   </div>
+</div>
+
+<!-- ===== MODAL SERBAGUNA (detail / borang bahan / embed) ===== -->
+<div id="uxModal" class="modal" onclick="if(event.target===this)closeUx()">
+  <div class="modal-card wide" id="uxCard"></div>
 </div>
 
 <!-- ===== iOS INSTALL SHEET ===== -->
@@ -520,6 +554,7 @@ select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid
     </div>
   </div>
   <div id="roleZone"></div>
+  <div id="bahanZone"></div>
   <div class="wrap">
     <div style="height:60px"></div>
   </div>
@@ -1016,14 +1051,14 @@ function pick(i){const h=window._hits[i];closeSearch();h.it.go();}
 /* keyboard */
 document.addEventListener('keydown',e=>{
   if(e.key==='/'&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();openSearch();}
-  if(e.key==='Escape')closeSearch();
+  if(e.key==='Escape'){ closeSearch(); closeUx(); closeIos(); }
 });
 document.getElementById('ovInput').addEventListener('input',runSearch);
 
 
 /* ================= BACKEND & AUTH ================= */
 /* Tampal URL Web App GAS (/exec) di bawah selepas deploy backend: */
-const API = 'https://script.google.com/macros/s/AKfycby62hX1EfIs-16JwxhXDmIZqsKxyDI7OiQ9gdeniAt23M8tfUCy6OpMuDSYZja2qnht/exec';
+const API = 'https://script.google.com/macros/s/AKfycbxRZvtFVZoQ0ihlDBrKLowXKcvQgaJAeVnlsW6K8cdpc30gZugBenJIPMWqO2rHnksf/exec';
 
 let AUTH = null;        // {token, role, id, nama, kodPPD, namaPPD, namaSekolah}
 let curRole = 'guru';
@@ -1039,13 +1074,33 @@ function offlineCard(msg){
   return `<div class="offline-note"><b>Ralat memuatkan data.</b><br>Sambungan ke pelayan OK, tetapi berlaku masalah semasa memproses data.<br><small style="opacity:.65">${esc(msg)}</small></div>`;
 }
 
-async function api(action, payload){
+async function api(action, payload, cubaan){
   if(!API || API.indexOf('PASTE_')===0) throw new Error('URL backend (GAS) belum ditetapkan dalam index.html');
-  const res = await fetch(API, { method:'POST', body: JSON.stringify(Object.assign({action:action}, payload||{})) });
-  let data; try{ data = await res.json(); }catch(e){ throw new Error('Respons pelayan tidak sah'); }
-  if(!data.ok) throw new Error(data.error||'Ralat tidak diketahui');
+  cubaan = cubaan || 1;
+  const MAKS = 4;                              // cuba sehingga 4 kali bila sistem sibuk
+  let data;
+  try{
+    const res = await fetch(API, { method:'POST', body: JSON.stringify(Object.assign({action:action}, payload||{})) });
+    data = await res.json();
+  }catch(e){
+    // Talian tersekat / respons rosak — cuba semula beberapa kali sebelum menyerah.
+    if(cubaan < MAKS && navigator.onLine){
+      await tunggu(600 * Math.pow(2, cubaan-1));   // 0.6s → 1.2s → 2.4s
+      return api(action, payload, cubaan+1);
+    }
+    throw new Error(navigator.onLine ? 'Respons pelayan tidak sah' : 'Tiada talian internet');
+  }
+  if(!data.ok){
+    // Pelayan sibuk (kunci tidak diperoleh) — beri laluan, cuba lagi.
+    if(data.busy && cubaan < MAKS){
+      await tunggu(900 * Math.pow(2, cubaan-1));   // 0.9s → 1.8s → 3.6s
+      return api(action, payload, cubaan+1);
+    }
+    throw new Error(data.error||'Ralat tidak diketahui');
+  }
   return data;
 }
+function tunggu(ms){ return new Promise(r=>setTimeout(r, ms + Math.random()*250)); }  // +jitter, elak semua cuba serentak
 
 /* ---- login ---- */
 function setRole(r, el){
@@ -1090,6 +1145,7 @@ function enterApp(){
   const roleName={guru:'Guru Data',ppd:'Pegawai PPD',admin:'Admin JPN'}[AUTH.role];
   document.getElementById('whoName').textContent=(AUTH.nama||AUTH.id)+' · '+roleName;
   buildRoleZone();
+  loadBahan();
   go('home');
 }
 
@@ -1166,9 +1222,18 @@ function renderLantikanForm(rec){
 async function submitLantikan(){
   const nama=val('lkNama').trim(), kp=val('lkKP').trim();
   if(!nama||!kp){alert('Sila isi Nama Penuh dan No. Kad Pengenalan.');return;}
+  const btn=event&&event.target?event.target:null;
+  const asal=btn?btn.textContent:'';
+  if(btn){ btn.disabled=true; btn.textContent='Menghantar…'; }   // elak tekan berkali-kali
   const data={nama:nama,kp:kp,gred:val('lkGred'),tarikh:val('lkTarikh'),ada:val('lkAda'),noSurat:val('lkNoSurat'),catatan:val('lkCatatan')};
-  try{ await api('submitLantikan',{token:AUTH.token,data:data}); alert('Berjaya dihantar. Status kini: Menunggu Semakan JPN.'); loadMyLantikan(); }
-  catch(e){ alert('Gagal menghantar: '+e.message); }
+  try{
+    await api('submitLantikan',{token:AUTH.token,data:data});
+    alert('Berjaya dihantar. Status kini: Menunggu Semakan JPN.');
+    loadMyLantikan();
+  }catch(e){
+    if(btn){ btn.disabled=false; btn.textContent=asal; }
+    alert('Gagal menghantar: '+e.message+'\n\nJika ramai pengguna menghantar serentak, tunggu seketika dan cuba lagi — data anda tidak hilang.');
+  }
 }
 
 /* ---- Admin dashboard ---- */
@@ -1180,21 +1245,11 @@ async function loadAdmin(){
 }
 let ADMIN_TAB='sekolah', PPD_DATA=null;
 function renderAdmin(){
-  const rows=ADMIN_DATA;
-  const total=rows.length;
-  const hantar=rows.filter(r=>r.status&&r.status!=='Belum Hantar').length;
-  const tunggu=rows.filter(r=>r.status==='Menunggu Semakan').length;
-  const selesai=rows.filter(r=>r.status==='Selesai').length;
   document.getElementById('adminBody').innerHTML=`
-   <div class="facts">
-     <div class="fact"><b>${total}</b><span>Sekolah berdaftar</span></div>
-     <div class="fact"><b>${hantar}</b><span>Telah hantar</span></div>
-     <div class="fact"><b>${tunggu}</b><span>Menunggu semakan</span></div>
-     <div class="fact"><b>${selesai}</b><span>Selesai</span></div>
-   </div>
-   <div class="tabs" style="margin:18px 0 4px">
+   <div class="tabs" style="margin:4px 0 4px">
      <button class="tab ${ADMIN_TAB==='sekolah'?'active':''}" style="color:${ADMIN_TAB==='sekolah'?'':'var(--ink-soft)'}" onclick="adminTab('sekolah',this)">Sekolah & Surat Lantikan</button>
      <button class="tab ${ADMIN_TAB==='ppd'?'active':''}" style="color:${ADMIN_TAB==='ppd'?'':'var(--ink-soft)'}" onclick="adminTab('ppd',this)">Akaun PPD</button>
+     <button class="tab ${ADMIN_TAB==='bahan'?'active':''}" style="color:${ADMIN_TAB==='bahan'?'':'var(--ink-soft)'}" onclick="adminTab('bahan',this)">Bahan & Slaid</button>
    </div>
    <div id="adminPane"></div>`;
   renderAdminPane();
@@ -1209,37 +1264,86 @@ function renderAdminPane(){
   const pane=document.getElementById('adminPane');
   if(ADMIN_TAB==='sekolah'){
     const ppds=[...new Set(ADMIN_DATA.map(r=>r.namaPPD).filter(Boolean))].sort();
-    pane.innerHTML=`<div class="toolbar">
+    pane.innerHTML=`<div class="facts" id="adminFacts"></div>
+     <div class="toolbar">
        <select id="fPPD" onchange="renderAdminTable()"><option value="">Semua PPD</option>${ppds.map(p=>`<option>${esc(p)}</option>`).join('')}</select>
        <select id="fStatus" onchange="renderAdminTable()"><option value="">Semua status</option>${STATUSES.map(s=>`<option>${s}</option>`).join('')}</select>
+       <select id="fSurat" onchange="renderAdminTable()"><option value="">Semua surat</option><option value="Ya">Surat: Ada</option><option value="Tidak">Surat: Belum</option></select>
        <input id="fQ" placeholder="Cari sekolah / nama / KP…" oninput="renderAdminTable()">
        <button class="btn-sm ghost" onclick="exportCSV()">Eksport CSV</button>
+       <button class="btn-sm ghost" onclick="resetFilter()">Reset penapis</button>
      </div>
      <div id="adminTable"></div>`;
     renderAdminTable();
-  } else {
+  } else if(ADMIN_TAB==='ppd'){
     pane.innerHTML=`<div class="toolbar"><input id="pQ2" placeholder="Cari PPD…" oninput="renderPpdAdminTable()"></div><div id="ppdAdminTable"></div>`;
     if(PPD_DATA){ renderPpdAdminTable(); }
     else {
       document.getElementById('ppdAdminTable').innerHTML='<div class="card"><p>Memuatkan…</p></div>';
       api('adminPpdList',{token:AUTH.token}).then(d=>{PPD_DATA=d.rows||[];renderPpdAdminTable();}).catch(e=>{document.getElementById('ppdAdminTable').innerHTML=offlineCard(e.message);});
     }
+  } else {
+    pane.innerHTML=`<div class="toolbar"><button class="btn-sm" onclick="openBahanForm()">+ Tambah bahan</button></div><div id="bahanAdminTable"></div>`;
+    if(BAHAN){ renderBahanAdminTable(); }
+    else { document.getElementById('bahanAdminTable').innerHTML='<div class="card"><p>Memuatkan…</p></div>'; loadBahan().then(()=>renderBahanAdminTable()); }
   }
 }
+function renderBahanAdminTable(){
+  const c=document.getElementById('bahanAdminTable'); if(!c)return;
+  const rows=BAHAN||[];
+  if(!rows.length){c.innerHTML='<div class="empty">Belum ada bahan.</div>';return;}
+  c.innerHTML=`<div class="dwrap"><table class="dtable">
+    <thead><tr><th>Tajuk</th><th>Jenis</th><th>Susunan</th><th>Papar</th><th>Tindakan</th></tr></thead>
+    <tbody>${rows.map(b=>`<tr>
+      <td><b>${esc(b.tajuk)}</b>${b.keterangan?`<br><span style="font-size:11.5px">${esc(b.keterangan)}</span>`:''}</td>
+      <td>${b.jenis==='embed'?'Embed':'Pautan'}</td>
+      <td>${esc(b.susunan)}</td>
+      <td>${b.aktif?'<span class="st st-selesai">Papar</span>':'<span class="st st-belum">Sembunyi</span>'}</td>
+      <td><button class="btn-reset" onclick="openBahanForm('${esc(b.id)}')">Edit</button></td>
+    </tr>`).join('')}</tbody></table></div>`;
+}
 function adminFiltered(){
-  const fp=val('fPPD'),fs=val('fStatus'),fq=(val('fQ')||'').toLowerCase();
+  const fp=val('fPPD'),fs=val('fStatus'),fsu=val('fSurat'),fq=(val('fQ')||'').toLowerCase();
   return ADMIN_DATA.filter(r=>{
     if(fp&&r.namaPPD!==fp)return false;
     if(fs&&(r.status||'Belum Hantar')!==fs)return false;
+    if(fsu){ const ada = (r.ada==='Ya') ? 'Ya' : 'Tidak'; if(ada!==fsu)return false; }
     if(fq){const h=(r.kod+' '+(r.namaSekolah||'')+' '+(r.nama||'')+' '+(r.kp||'')).toLowerCase();if(h.indexOf(fq)<0)return false;}
     return true;
   });
 }
+function resetFilter(){
+  ['fPPD','fStatus','fSurat','fQ'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
+  renderAdminTable();
+}
+function renderAdminFacts(rows){
+  const f=document.getElementById('adminFacts'); if(!f)return;
+  const total=rows.length;
+  const hantar=rows.filter(r=>r.status&&r.status!=='Belum Hantar').length;
+  const tunggu=rows.filter(r=>r.status==='Menunggu Semakan').length;
+  const selesai=rows.filter(r=>r.status==='Selesai').length;
+  const suratAda=rows.filter(r=>r.ada==='Ya').length;
+  const suratBelum=total-suratAda;
+  const ditapis = rows.length!==ADMIN_DATA.length;
+  f.innerHTML=`
+    <div class="fact"><b>${total}</b><span>Sekolah${ditapis?' (ditapis)':' berdaftar'}</span></div>
+    <div class="fact"><b>${hantar}</b><span>Telah hantar</span></div>
+    <div class="fact"><b>${tunggu}</b><span>Menunggu semakan</span></div>
+    <div class="fact"><b>${selesai}</b><span>Selesai</span></div>
+    <div class="fact fact-ada" style="cursor:pointer" onclick="tapisSurat('Ya')"><b>${suratAda}</b><span>Surat: Ada ${val('fSurat')==='Ya'?'✓':''}</span></div>
+    <div class="fact fact-belum" style="cursor:pointer" onclick="tapisSurat('Tidak')"><b>${suratBelum}</b><span>Surat: Belum ada ${val('fSurat')==='Tidak'?'✓':''}</span></div>`;
+}
+function tapisSurat(v){
+  const el=document.getElementById('fSurat'); if(!el)return;
+  el.value = (el.value===v) ? '' : v;   // klik semula = buang penapis
+  renderAdminTable();
+}
 function renderAdminTable(){
   const rows=adminFiltered(), c=document.getElementById('adminTable');
+  renderAdminFacts(rows);
   if(!rows.length){c.innerHTML='<div class="empty">Tiada rekod sepadan.</div>';return;}
   c.innerHTML=`<div class="dwrap"><table class="dtable">
-    <thead><tr><th>Sekolah</th><th>PPD</th><th>Guru Data</th><th>No. KP</th><th>Gred</th><th>Surat</th><th>Status</th><th>PIN</th></tr></thead>
+    <thead><tr><th>Sekolah</th><th>PPD</th><th>Guru Data</th><th>No. KP</th><th>Gred</th><th>Surat</th><th>Status</th><th>Catatan</th><th>PIN</th></tr></thead>
     <tbody>${rows.map(r=>{const st=r.status||'Belum Hantar';
       return `<tr>
         <td><b>${esc(r.namaSekolah||r.kod)}</b><br><span style="font-family:var(--mono);font-size:11px">${esc(r.kod)}</span></td>
@@ -1249,6 +1353,7 @@ function renderAdminTable(){
         <td>${esc(r.gred||'—')}</td>
         <td>${r.ada==='Ya'?'<span class="st st-selesai">Ada</span>':'<span class="st st-belum">Belum</span>'}</td>
         <td>${st==='Belum Hantar'?'<span class="st st-belum">Belum Hantar</span>':`<select class="stsel" data-kod="${esc(r.kod)}" onchange="updateStatus(this)">${['Menunggu Semakan','Sedang Diproses','Selesai','Perlu Pembetulan'].map(s=>`<option${s===st?' selected':''}>${s}</option>`).join('')}</select>`}</td>
+        <td><button class="btn-reset" onclick="openLantikanDetail('${esc(r.kod)}')">${r.catatan?'📝 Lihat':'Lihat'}</button></td>
         <td><button class="btn-reset" onclick="resetPin('guru','${esc(r.kod)}',this)">Reset PIN</button></td>
       </tr>`;}).join('')}</tbody></table></div>`;
 }
@@ -1285,8 +1390,8 @@ async function updateStatus(sel){
 }
 function exportCSV(){
   const rows=adminFiltered();
-  const head=['Kod Sekolah','Nama Sekolah','PPD','Nama Guru Data','No KP','Gred','Tarikh Dilantik','Ada Surat','No Surat','Status','Catatan','Tarikh Kemas'];
-  const body=rows.map(r=>[r.kod,r.namaSekolah,r.namaPPD,r.nama,r.kp,r.gred,r.tarikh,r.ada,r.noSurat,r.status,r.catatan,r.tarikhKemas].map(csvCell).join(','));
+  const head=['Kod Sekolah','Nama Sekolah','PPD','Nama Guru Data','No KP','Gred','Tarikh Dilantik','Ada Surat','No Surat','Status','Catatan Guru Data','Maklum Balas JPN','Tarikh Kemas'];
+  const body=rows.map(r=>[r.kod,r.namaSekolah,r.namaPPD,r.nama,r.kp,r.gred,r.tarikh,r.ada,r.noSurat,r.status,r.catatan,r.adminCatatan,r.tarikhKemas].map(csvCell).join(','));
   const csv=[head.join(',')].concat(body).join('\n');
   const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='surat-lantikan-guru-data.csv'; a.click();
@@ -1327,6 +1432,142 @@ function ppdFilter(){
       <td>${r.ada==='Ya'?'<span class="st st-selesai">Ada</span>':'<span class="st st-belum">Belum</span>'}</td>
       <td><span class="st ${statusClass(st)}">${st}</span></td>
       <td>${esc(r.tarikhKemas||'—')}</td></tr>`;}).join('')}</tbody></table></div>`;
+}
+
+/* ================= MODAL SERBAGUNA ================= */
+function openUx(html, xl){
+  const card=document.getElementById('uxCard');
+  card.className='modal-card '+(xl?'xl':'wide');
+  card.innerHTML=html;
+  document.getElementById('uxModal').classList.add('open');
+}
+function closeUx(){ document.getElementById('uxModal').classList.remove('open'); }
+
+/* ================= ADMIN: DETAIL LANTIKAN ================= */
+function openLantikanDetail(kod){
+  const r=ADMIN_DATA.find(x=>String(x.kod)===String(kod)); if(!r)return;
+  const st=r.status||'Belum Hantar';
+  openUx(`
+    <h3>${esc(r.namaSekolah||r.kod)}</h3>
+    <p style="font-family:var(--mono);font-size:12px">${esc(r.kod)} · ${esc(r.namaPPD||'-')}</p>
+    <dl class="kv">
+      <dt>Guru Data</dt><dd>${esc(r.nama)||'—'}</dd>
+      <dt>No. KP</dt><dd>${esc(r.kp)||'—'}</dd>
+      <dt>Gred</dt><dd>${esc(r.gred)||'—'}</dd>
+      <dt>Tarikh dilantik</dt><dd>${esc(r.tarikh)||'—'}</dd>
+      <dt>Surat sedia ada</dt><dd>${r.ada==='Ya'?('Ada'+(r.noSurat?' · '+esc(r.noSurat):'')):'Belum ada'}</dd>
+      <dt>Status</dt><dd><span class="st ${statusClass(st)}">${st}</span></dd>
+      <dt>Kemas kini</dt><dd>${esc(r.tarikhKemas)||'—'}</dd>
+    </dl>
+    <h4 style="font-family:var(--disp);font-size:15px;color:var(--navy);margin-bottom:7px">Catatan daripada Guru Data</h4>
+    <div class="note-box ${r.catatan?'':'empty'}">${r.catatan?esc(r.catatan):'Tiada catatan diberikan.'}</div>
+    <h4 style="font-family:var(--disp);font-size:15px;color:var(--navy);margin-bottom:7px">Maklum balas JPN</h4>
+    <div class="fld"><textarea id="adCat" placeholder="Cth: Sila betulkan ejaan nama / No. KP tidak sepadan…">${esc(r.adminCatatan||'')}</textarea></div>
+    <div class="fld" style="margin-top:12px"><label>Tukar status</label>
+      <select id="adSt">${STATUSES.map(s=>`<option${s===st?' selected':''}>${s}</option>`).join('')}</select>
+    </div>
+    <div class="msg" id="adMsg"></div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="simpanDetail('${esc(r.kod)}',this)">Simpan</button>
+      <button class="btn-sm ghost" onclick="closeUx()">Tutup</button>
+    </div>`);
+}
+async function simpanDetail(kod, btn){
+  const status=val('adSt'), adminCatatan=val('adCat');
+  btn.disabled=true; btn.textContent='Menyimpan…';
+  try{
+    await api('updateStatus',{token:AUTH.token,kod:kod,status:status,adminCatatan:adminCatatan});
+    const r=ADMIN_DATA.find(x=>String(x.kod)===String(kod));
+    if(r){ r.status=status; r.adminCatatan=adminCatatan; }
+    closeUx(); renderAdminPane();
+  }catch(e){ document.getElementById('adMsg').textContent=e.message; btn.disabled=false; btn.textContent='Simpan'; }
+}
+
+/* ================= BAHAN & SLAID ================= */
+let BAHAN=null;
+async function loadBahan(){
+  const z=document.getElementById('bahanZone'); if(!z||!AUTH)return;
+  try{ const d=await api('listBahan',{token:AUTH.token}); BAHAN=d.rows||[]; renderBahanHome(); }
+  catch(e){ z.innerHTML=''; }   // senyap jika gagal — jangan kacau laman utama
+}
+function renderBahanHome(){
+  const z=document.getElementById('bahanZone');
+  const rows=(BAHAN||[]).filter(b=>b.aktif);
+  if(!rows.length && AUTH.role!=='admin'){ z.innerHTML=''; return; }
+  z.innerHTML=`<div class="wrap">
+    <div class="sec-head"><div class="kick">Bahan sokongan</div><h2>Bahan & Slaid</h2>
+      <p>Slaid taklimat, panduan dan bahan rujukan tambahan.${AUTH.role==='admin'?' Anda boleh tambah atau kemas kini bahan di sini.':''}</p></div>
+    ${AUTH.role==='admin'?`<div style="margin-bottom:14px"><button class="btn-sm" onclick="openBahanForm()">+ Tambah bahan</button></div>`:''}
+    ${rows.length?`<div class="bahan-grid">${rows.map(b=>bahanCard(b)).join('')}</div>`
+      :`<div class="empty" style="background:var(--paper);border:1px solid var(--line);border-radius:var(--r)">Belum ada bahan. Tekan “Tambah bahan” untuk mula.</div>`}
+  </div>`;
+}
+function bahanCard(b){
+  const ic = b.jenis==='embed'
+    ? '<rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/>'
+    : '<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>';
+  return `<div class="bahan" onclick="bukaBahan('${esc(b.id)}')">
+    <div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ic}</svg></div>
+    <h4>${esc(b.tajuk)}</h4>
+    ${b.keterangan?`<p>${esc(b.keterangan)}</p>`:'<p></p>'}
+    <div class="tagj">${b.jenis==='embed'?'Papar dalam app':'Buka pautan'}</div>
+  </div>`;
+}
+function bukaBahan(id){
+  const b=(BAHAN||[]).find(x=>String(x.id)===String(id)); if(!b)return;
+  if(b.jenis==='embed'){
+    openUx(`<h3 style="margin-bottom:12px">${esc(b.tajuk)}</h3>
+      <div class="embed-wrap"><iframe src="${esc(b.url)}" allow="fullscreen" allowfullscreen loading="lazy"></iframe></div>
+      <div class="modal-actions">
+        <a class="btn-sm" style="text-decoration:none" href="${esc(b.url)}" target="_blank" rel="noopener">Buka di tab baharu</a>
+        <button class="btn-sm ghost" onclick="closeUx()">Tutup</button>
+      </div>`, true);
+  } else {
+    window.open(b.url,'_blank','noopener');
+  }
+}
+/* --- admin: borang bahan --- */
+function openBahanForm(id){
+  const b=(BAHAN||[]).find(x=>String(x.id)===String(id))||{};
+  const baharu=!b.id;
+  openUx(`
+    <h3>${baharu?'Tambah bahan':'Kemas kini bahan'}</h3>
+    <p>Slaid Canva: guna <b>Share → More → Embed</b>, salin URL dalam <code>src="…"</code>, dan pilih jenis “Papar dalam app”.</p>
+    <div class="fld" style="margin-bottom:12px"><label>Tajuk *</label><input id="bhTajuk" value="${esc(b.tajuk||'')}" placeholder="Cth: Slaid Taklimat Guru Data 2026"></div>
+    <div class="fld" style="margin-bottom:12px"><label>Keterangan ringkas</label><input id="bhKet" value="${esc(b.keterangan||'')}" placeholder="Cth: Bahan bengkel Julai 2026"></div>
+    <div class="fld" style="margin-bottom:12px"><label>URL *</label><input id="bhUrl" value="${esc(b.url||'')}" placeholder="https://…"></div>
+    <div class="form-grid">
+      <div class="fld"><label>Jenis paparan</label>
+        <select id="bhJenis">
+          <option value="pautan"${b.jenis!=='embed'?' selected':''}>Buka pautan (tab baharu)</option>
+          <option value="embed"${b.jenis==='embed'?' selected':''}>Papar dalam app (embed)</option>
+        </select></div>
+      <div class="fld"><label>Susunan (kecil = atas)</label><input id="bhSusun" type="number" value="${esc(b.susunan!=null?b.susunan:0)}"></div>
+      <div class="fld"><label>Papar kepada pengguna?</label>
+        <select id="bhAktif">
+          <option value="ya"${b.aktif!==false?' selected':''}>Ya — papar</option>
+          <option value="tidak"${b.aktif===false?' selected':''}>Tidak — sembunyi</option>
+        </select></div>
+    </div>
+    <div class="msg" id="bhMsg"></div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="simpanBahan('${esc(b.id||'')}',this)">Simpan</button>
+      ${!baharu?`<button class="btn-sm ghost" onclick="padamBahan('${esc(b.id)}')">Padam</button>`:''}
+      <button class="btn-sm ghost" onclick="closeUx()">Batal</button>
+    </div>`);
+}
+async function simpanBahan(id, btn){
+  const data={ id:id||'', tajuk:val('bhTajuk').trim(), keterangan:val('bhKet').trim(), url:val('bhUrl').trim(),
+               jenis:val('bhJenis'), susunan:Number(val('bhSusun')||0), aktif: val('bhAktif')==='ya' };
+  if(!data.tajuk||!data.url){ document.getElementById('bhMsg').textContent='Tajuk dan URL wajib diisi.'; return; }
+  btn.disabled=true; btn.textContent='Menyimpan…';
+  try{ await api('saveBahan',{token:AUTH.token,data:data}); closeUx(); BAHAN=null; await loadBahan(); if(ADMIN_TAB==='bahan')renderAdminPane(); }
+  catch(e){ document.getElementById('bhMsg').textContent=e.message; btn.disabled=false; btn.textContent='Simpan'; }
+}
+async function padamBahan(id){
+  if(!confirm('Padam bahan ini? Tindakan ini tidak boleh dibatalkan.'))return;
+  try{ await api('deleteBahan',{token:AUTH.token,id:id}); closeUx(); BAHAN=null; await loadBahan(); if(ADMIN_TAB==='bahan')renderAdminPane(); }
+  catch(e){ alert('Gagal padam: '+e.message); }
 }
 
 /* delegated navigation for role cards */
