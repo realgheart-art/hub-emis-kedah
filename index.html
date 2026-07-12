@@ -951,7 +951,7 @@ function openMdvSec(i){
       </div>`).join('')}`;
   window.scrollTo({top:0,behavior:'instant'});
 }
-function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(t){ if(t===null||t===undefined)return ''; return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 /* ================= SEARCH ================= */
 let SEARCH_INDEX=null;
@@ -1030,7 +1030,14 @@ let curRole = 'guru';
 const STATUSES = ['Belum Hantar','Menunggu Semakan','Sedang Diproses','Selesai','Perlu Pembetulan'];
 function statusClass(s){return {'Belum Hantar':'st-belum','Menunggu Semakan':'st-tunggu','Sedang Diproses':'st-proses','Selesai':'st-selesai','Perlu Pembetulan':'st-betul'}[s]||'st-belum';}
 function val(id){const el=document.getElementById(id);return el?el.value:'';}
-function offlineCard(msg){return `<div class="offline-note"><b>Tiada sambungan ke pelayan.</b><br>Ruang ini memerlukan talian internet. Bahagian rujukan (SOP, Kalendar, Kamus) tetap boleh digunakan tanpa talian.<br><small style="opacity:.65">${esc(msg||'')}</small></div>`;}
+function offlineCard(msg){
+  msg = msg || '';
+  const luarTalian = !navigator.onLine || /failed to fetch|networkerror|load failed|belum ditetapkan/i.test(msg);
+  if(luarTalian){
+    return `<div class="offline-note"><b>Tiada sambungan ke pelayan.</b><br>Ruang ini memerlukan talian internet. Bahagian rujukan (SOP, Kalendar, Kamus) tetap boleh digunakan tanpa talian.<br><small style="opacity:.65">${esc(msg)}</small></div>`;
+  }
+  return `<div class="offline-note"><b>Ralat memuatkan data.</b><br>Sambungan ke pelayan OK, tetapi berlaku masalah semasa memproses data.<br><small style="opacity:.65">${esc(msg)}</small></div>`;
+}
 
 async function api(action, payload){
   if(!API || API.indexOf('PASTE_')===0) throw new Error('URL backend (GAS) belum ditetapkan dalam index.html');
