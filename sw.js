@@ -5,7 +5,7 @@
    - GAS API calls (login, status, dashboard): never cached — always live network.
    Bump CACHE version whenever index.html / mdv-data.js changes to refresh clients. */
 
-const CACHE = 'emis-kedah-v8';
+const CACHE = 'emis-kedah-v9';
 const SHELL = [
   './',
   './index.html',
