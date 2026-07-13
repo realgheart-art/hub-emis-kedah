@@ -301,8 +301,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .login-logo{width:86px;height:86px;border-radius:50%;box-shadow:0 0 0 2px rgba(194,161,94,.5);margin-bottom:14px}
 .login-card h1{font-family:var(--disp);font-weight:600;font-size:22px;color:var(--navy);line-height:1.15}
 .login-card .sub{font-size:11.5px;color:var(--brass-deep);letter-spacing:.6px;margin-top:4px;margin-bottom:22px}
-.rtabs{display:flex;gap:5px;background:var(--paper-2);padding:5px;border-radius:12px;margin-bottom:20px}
-.rtab{flex:1;font-size:12px;font-weight:600;padding:9px 4px;border-radius:8px;color:var(--ink-soft);transition:.15s}
+.rtabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;background:var(--paper-2);padding:5px;border-radius:12px;margin-bottom:20px}
+.rtab{font-size:12px;font-weight:600;padding:9px 4px;border-radius:8px;color:var(--ink-soft);transition:.15s}
 .rtab.active{background:var(--navy);color:var(--cream)}
 .field{display:block;text-align:left;margin-bottom:13px}
 .field span{display:block;font-size:12.5px;font-weight:600;color:var(--navy-2);margin-bottom:6px}
@@ -403,6 +403,8 @@ select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid
 .fact-ada b{color:#2f6b44!important}
 .fact-belum{border-color:#e6c6a3!important;background:#fdf7ef!important}
 .fact-belum b{color:#96652b!important}
+.fact-cadang{border-color:#c2a15e!important;background:#fdf8ee!important}
+.fact-cadang b{color:#8a6521!important}
 .modal{position:fixed;inset:0;z-index:210;background:rgba(13,31,56,.62);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:24px}
 .modal.open{display:flex}
 .modal-card{background:var(--paper);border-radius:var(--r);max-width:390px;width:100%;padding:28px;box-shadow:var(--shadow-lg)}
@@ -422,6 +424,7 @@ select.stsel{font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid
       <div class="sub">EMIS KEDAH · AKURASI DATA, NADI KITA</div>
       <div class="rtabs">
         <button class="rtab active" data-role="guru" onclick="setRole('guru',this)">Guru Data</button>
+        <button class="rtab" data-role="ju" onclick="setRole('ju',this)">Jurulatih Utama</button>
         <button class="rtab" data-role="ppd" onclick="setRole('ppd',this)">Pegawai PPD</button>
         <button class="rtab" data-role="admin" onclick="setRole('admin',this)">Admin JPN</button>
       </div>
@@ -1058,7 +1061,7 @@ document.getElementById('ovInput').addEventListener('input',runSearch);
 
 /* ================= BACKEND & AUTH ================= */
 /* Tampal URL Web App GAS (/exec) di bawah selepas deploy backend: */
-const API = 'https://script.google.com/macros/s/AKfycbxRZvtFVZoQ0ihlDBrKLowXKcvQgaJAeVnlsW6K8cdpc30gZugBenJIPMWqO2rHnksf/exec';
+const API = 'https://script.google.com/macros/s/AKfycbxSVk4xLgyOJjq-F0CQXgIeujvX-Qzu9n4ofF6d93vKG4qiBVMuerMZwDeiB7Tajgsr/exec';
 
 let AUTH = null;        // {token, role, id, nama, kodPPD, namaPPD, namaSekolah}
 let curRole = 'guru';
@@ -1109,7 +1112,8 @@ function setRole(r, el){
   if(el)el.classList.add('active');
   const map={
     guru:['Kod Sekolah','cth: CEA4060','PIN pertama = Kod Sekolah anda. Anda akan diminta tukar selepas log masuk pertama.'],
-    ppd:['Kod PPD','cth: 0201','Gunakan akaun PPD yang disediakan Admin JPN.'],
+    ju:['Nama Pengguna JU','cth: ju.kotasetar','PIN pertama = Nama Pengguna anda. Akaun disediakan oleh Admin JPN.'],
+    ppd:['Kod PPD','cth: 0201','PIN pertama = Kod PPD anda.'],
     admin:['Nama Pengguna','admin','Akaun pentadbir JPN sahaja.']
   };
   document.getElementById('idLabel').textContent=map[r][0];
@@ -1142,7 +1146,7 @@ function logout(){
 function enterApp(){
   document.getElementById('gate').classList.add('hidden');
   const chip=document.getElementById('userChip'); chip.classList.remove('hidden');
-  const roleName={guru:'Guru Data',ppd:'Pegawai PPD',admin:'Admin JPN'}[AUTH.role];
+  const roleName={guru:'Guru Data',ppd:'Pegawai PPD',ju:'Jurulatih Utama',admin:'Admin JPN'}[AUTH.role];
   document.getElementById('whoName').textContent=(AUTH.nama||AUTH.id)+' · '+roleName;
   buildRoleZone();
   loadBahan();
@@ -1152,14 +1156,14 @@ function enterApp(){
 /* ---- role zone on home ---- */
 function buildRoleZone(){
   const z=document.getElementById('roleZone'); if(!z||!AUTH)return;
-  const titles={guru:'Tugas Guru Data',ppd:'Pantauan Daerah',admin:'Pentadbiran JPN'};
+  const titles={guru:'Tugas Guru Data',ppd:'Pantauan Daerah',ju:'Ruang Jurulatih Utama',admin:'Pentadbiran JPN'};
   let card='';
   if(AUTH.role==='guru'){
     card=roleCard('lantikan','Surat Lantikan Saya','Isi & semak status permohonan Surat Lantikan Guru Data anda.','<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>');
-  } else if(AUTH.role==='ppd'){
-    card=roleCard('pantauPPD','Pantauan Sekolah Daerah','Status penghantaran Surat Lantikan bagi sekolah dalam '+(AUTH.namaPPD||'daerah anda')+'.','<path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/>');
+  } else if(AUTH.role==='ppd' || AUTH.role==='ju'){
+    card=roleCard('pantauPPD','Semakan Sekolah Daerah','Semak Surat Lantikan, cadang status kepada JPN & reset PIN Guru Data dalam '+(AUTH.namaPPD||'daerah anda')+'.','<path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/>');
   } else {
-    card=roleCard('dashLantikan','Dashboard Surat Lantikan','Semak semua permohonan seluruh negeri, kemas kini status & eksport senarai.','<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/>');
+    card=roleCard('dashLantikan','Dashboard Surat Lantikan','Semak semua permohonan seluruh negeri, luluskan cadangan JU/PPD, urus akaun & bahan.','<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/>');
   }
   z.innerHTML=`<div class="wrap"><div class="sec-head"><div class="kick">Ruang anda</div><h2>${titles[AUTH.role]}</h2></div>${card}
     <div style="margin-top:12px"><a href="#" onclick="openPinModal(false);return false" style="font-size:13px;color:var(--brass-deep);font-weight:600">Tukar PIN</a></div></div>`;
@@ -1249,6 +1253,7 @@ function renderAdmin(){
    <div class="tabs" style="margin:4px 0 4px">
      <button class="tab ${ADMIN_TAB==='sekolah'?'active':''}" style="color:${ADMIN_TAB==='sekolah'?'':'var(--ink-soft)'}" onclick="adminTab('sekolah',this)">Sekolah & Surat Lantikan</button>
      <button class="tab ${ADMIN_TAB==='ppd'?'active':''}" style="color:${ADMIN_TAB==='ppd'?'':'var(--ink-soft)'}" onclick="adminTab('ppd',this)">Akaun PPD</button>
+     <button class="tab ${ADMIN_TAB==='ju'?'active':''}" style="color:${ADMIN_TAB==='ju'?'':'var(--ink-soft)'}" onclick="adminTab('ju',this)">Akaun JU</button>
      <button class="tab ${ADMIN_TAB==='bahan'?'active':''}" style="color:${ADMIN_TAB==='bahan'?'':'var(--ink-soft)'}" onclick="adminTab('bahan',this)">Bahan & Slaid</button>
    </div>
    <div id="adminPane"></div>`;
@@ -1282,11 +1287,71 @@ function renderAdminPane(){
       document.getElementById('ppdAdminTable').innerHTML='<div class="card"><p>Memuatkan…</p></div>';
       api('adminPpdList',{token:AUTH.token}).then(d=>{PPD_DATA=d.rows||[];renderPpdAdminTable();}).catch(e=>{document.getElementById('ppdAdminTable').innerHTML=offlineCard(e.message);});
     }
+  } else if(ADMIN_TAB==='ju'){
+    pane.innerHTML=`<div class="toolbar"><button class="btn-sm" onclick="openJuForm()">+ Tambah JU</button><input id="jQ" placeholder="Cari JU / PPD…" oninput="renderJuTable()"></div><div id="juTable"></div>`;
+    if(JU_DATA){ renderJuTable(); }
+    else{
+      document.getElementById('juTable').innerHTML='<div class="card"><p>Memuatkan…</p></div>';
+      api('adminJuList',{token:AUTH.token}).then(d=>{JU_DATA=d.rows||[];JU_PPDS=d.ppds||[];renderJuTable();}).catch(e=>{document.getElementById('juTable').innerHTML=offlineCard(e.message);});
+    }
   } else {
     pane.innerHTML=`<div class="toolbar"><button class="btn-sm" onclick="openBahanForm()">+ Tambah bahan</button></div><div id="bahanAdminTable"></div>`;
     if(BAHAN){ renderBahanAdminTable(); }
     else { document.getElementById('bahanAdminTable').innerHTML='<div class="card"><p>Memuatkan…</p></div>'; loadBahan().then(()=>renderBahanAdminTable()); }
   }
+}
+
+/* --- Admin: akaun JU --- */
+let JU_DATA=null, JU_PPDS=[];
+function renderJuTable(){
+  const c=document.getElementById('juTable'); if(!c)return;
+  const q=(val('jQ')||'').toLowerCase();
+  let rows=(JU_DATA||[]).filter(r=>!q||(r.username+' '+(r.nama||'')+' '+(r.namaPPD||'')).toLowerCase().indexOf(q)>=0);
+  if(!rows.length){c.innerHTML='<div class="empty">Belum ada akaun JU. Tekan “Tambah JU” untuk mula.</div>';return;}
+  c.innerHTML=`<div class="dwrap"><table class="dtable">
+    <thead><tr><th>Nama Pengguna</th><th>Nama JU</th><th>PPD</th><th>Status PIN</th><th>Tindakan</th></tr></thead>
+    <tbody>${rows.map(j=>`<tr>
+      <td><span style="font-family:var(--mono)">${esc(j.username)}</span></td>
+      <td><b>${esc(j.nama||'—')}</b></td>
+      <td>${esc(j.namaPPD||j.kodPPD)}</td>
+      <td>${j.aktif?'<span class="st st-selesai">PIN sendiri</span>':'<span class="st st-belum">Guna default</span>'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn-reset" onclick="openJuForm('${esc(j.username)}')">Edit</button>
+        <button class="btn-reset" style="margin-left:5px" onclick="resetPin('ju','${esc(j.username)}',this)">Reset PIN</button>
+      </td></tr>`).join('')}</tbody></table></div>`;
+}
+function openJuForm(username){
+  const j=(JU_DATA||[]).find(x=>String(x.username)===String(username))||{};
+  const baharu=!j.username;
+  openUx(`
+    <h3>${baharu?'Tambah Jurulatih Utama':'Kemas kini JU'}</h3>
+    <p>JU hanya boleh melihat & mencadang status bagi sekolah dalam PPD yang ditetapkan. PIN pertama = Nama Pengguna.</p>
+    <div class="fld" style="margin-bottom:12px"><label>Nama Pengguna * (tiada ruang kosong)</label>
+      <input id="juUser" value="${esc(j.username||'')}" placeholder="cth: ju.kotasetar" ${baharu?'':'readonly class="ro"'}></div>
+    <div class="fld" style="margin-bottom:12px"><label>Nama penuh JU</label><input id="juNama" value="${esc(j.nama||'')}" placeholder="cth: En. Ahmad bin Ali"></div>
+    <div class="fld"><label>PPD *</label>
+      <select id="juPPD">${(JU_PPDS||[]).map(p=>`<option value="${esc(p.kodPPD)}"${String(p.kodPPD)===String(j.kodPPD)?' selected':''}>${esc(p.namaPPD)} (${esc(p.kodPPD)})</option>`).join('')}</select></div>
+    <div class="msg" id="juMsg"></div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="simpanJu('${esc(j.username||'')}',this)">Simpan</button>
+      ${!baharu?`<button class="btn-sm ghost" onclick="padamJu('${esc(j.username)}')">Padam</button>`:''}
+      <button class="btn-sm ghost" onclick="closeUx()">Batal</button>
+    </div>`);
+}
+async function simpanJu(existing, btn){
+  const data={ username: existing || val('juUser').trim(), nama: val('juNama').trim(), kodPPD: val('juPPD') };
+  if(!data.username){ document.getElementById('juMsg').textContent='Nama Pengguna wajib diisi.'; return; }
+  btn.disabled=true; btn.textContent='Menyimpan…';
+  try{
+    const d=await api('saveJu',{token:AUTH.token,data:data});
+    closeUx(); JU_DATA=null; renderAdminPane();
+    if(d.baharu) alert('Akaun JU dicipta.\n\nNama Pengguna: '+data.username+'\nPIN pertama: '+data.username+'\n\nJU perlu tukar PIN semasa log masuk pertama.');
+  }catch(e){ document.getElementById('juMsg').textContent=e.message; btn.disabled=false; btn.textContent='Simpan'; }
+}
+async function padamJu(username){
+  if(!confirm('Padam akaun JU "'+username+'"?'))return;
+  try{ await api('deleteJu',{token:AUTH.token,username:username}); closeUx(); JU_DATA=null; renderAdminPane(); }
+  catch(e){ alert('Gagal padam: '+e.message); }
 }
 function renderBahanAdminTable(){
   const c=document.getElementById('bahanAdminTable'); if(!c)return;
@@ -1308,12 +1373,14 @@ function adminFiltered(){
     if(fp&&r.namaPPD!==fp)return false;
     if(fs&&(r.status||'Belum Hantar')!==fs)return false;
     if(fsu){ const ada = (r.ada==='Ya') ? 'Ya' : 'Tidak'; if(ada!==fsu)return false; }
+    if(CADANG_ONLY && !r.cadangStatus) return false;
     if(fq){const h=(r.kod+' '+(r.namaSekolah||'')+' '+(r.nama||'')+' '+(r.kp||'')).toLowerCase();if(h.indexOf(fq)<0)return false;}
     return true;
   });
 }
 function resetFilter(){
   ['fPPD','fStatus','fSurat','fQ'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
+  CADANG_ONLY=false;
   renderAdminTable();
 }
 function renderAdminFacts(rows){
@@ -1324,6 +1391,7 @@ function renderAdminFacts(rows){
   const selesai=rows.filter(r=>r.status==='Selesai').length;
   const suratAda=rows.filter(r=>r.ada==='Ya').length;
   const suratBelum=total-suratAda;
+  const cadangan=rows.filter(r=>r.cadangStatus).length;
   const ditapis = rows.length!==ADMIN_DATA.length;
   f.innerHTML=`
     <div class="fact"><b>${total}</b><span>Sekolah${ditapis?' (ditapis)':' berdaftar'}</span></div>
@@ -1331,8 +1399,11 @@ function renderAdminFacts(rows){
     <div class="fact"><b>${tunggu}</b><span>Menunggu semakan</span></div>
     <div class="fact"><b>${selesai}</b><span>Selesai</span></div>
     <div class="fact fact-ada" style="cursor:pointer" onclick="tapisSurat('Ya')"><b>${suratAda}</b><span>Surat: Ada ${val('fSurat')==='Ya'?'✓':''}</span></div>
-    <div class="fact fact-belum" style="cursor:pointer" onclick="tapisSurat('Tidak')"><b>${suratBelum}</b><span>Surat: Belum ada ${val('fSurat')==='Tidak'?'✓':''}</span></div>`;
+    <div class="fact fact-belum" style="cursor:pointer" onclick="tapisSurat('Tidak')"><b>${suratBelum}</b><span>Surat: Belum ada ${val('fSurat')==='Tidak'?'✓':''}</span></div>
+    <div class="fact fact-cadang" style="cursor:pointer" onclick="tapisCadangan()"><b>${cadangan}</b><span>⏳ Cadangan JU/PPD ${CADANG_ONLY?'✓':''}</span></div>`;
 }
+let CADANG_ONLY=false;
+function tapisCadangan(){ CADANG_ONLY=!CADANG_ONLY; renderAdminTable(); }
 function tapisSurat(v){
   const el=document.getElementById('fSurat'); if(!el)return;
   el.value = (el.value===v) ? '' : v;   // klik semula = buang penapis
@@ -1353,7 +1424,7 @@ function renderAdminTable(){
         <td>${esc(r.gred||'—')}</td>
         <td>${r.ada==='Ya'?'<span class="st st-selesai">Ada</span>':'<span class="st st-belum">Belum</span>'}</td>
         <td>${st==='Belum Hantar'?'<span class="st st-belum">Belum Hantar</span>':`<select class="stsel" data-kod="${esc(r.kod)}" onchange="updateStatus(this)">${['Menunggu Semakan','Sedang Diproses','Selesai','Perlu Pembetulan'].map(s=>`<option${s===st?' selected':''}>${s}</option>`).join('')}</select>`}</td>
-        <td><button class="btn-reset" onclick="openLantikanDetail('${esc(r.kod)}')">${r.catatan?'📝 Lihat':'Lihat'}</button></td>
+        <td><button class="btn-reset" ${r.cadangStatus?'style="background:#fdf5e6;border-color:#e8c98a;color:#96652b;font-weight:700"':''} onclick="openLantikanDetail('${esc(r.kod)}')">${r.cadangStatus?'⏳ Cadangan':(r.catatan?'📝 Lihat':'Lihat')}</button></td>
         <td><button class="btn-reset" onclick="resetPin('guru','${esc(r.kod)}',this)">Reset PIN</button></td>
       </tr>`;}).join('')}</tbody></table></div>`;
 }
@@ -1408,15 +1479,19 @@ async function loadPPD(){
 function renderPPD(rows){
   window._ppd=rows;
   const total=rows.length, hantar=rows.filter(r=>r.status&&r.status!=='Belum Hantar').length, selesai=rows.filter(r=>r.status==='Selesai').length;
+  const cadang=rows.filter(r=>r.cadangStatus).length;
   document.getElementById('ppdBody').innerHTML=`
    <div class="facts">
      <div class="fact"><b>${total}</b><span>Sekolah</span></div>
      <div class="fact"><b>${hantar}</b><span>Telah hantar</span></div>
      <div class="fact"><b>${total-hantar}</b><span>Belum hantar</span></div>
      <div class="fact"><b>${selesai}</b><span>Selesai</span></div>
+     <div class="fact fact-ada"><b>${rows.filter(r=>r.ada==='Ya').length}</b><span>Surat: Ada</span></div>
+     <div class="fact fact-belum"><b>${cadang}</b><span>Cadangan menunggu JPN</span></div>
    </div>
    <div class="toolbar"><input id="pQ" placeholder="Cari sekolah / nama…" oninput="ppdFilter()"></div>
-   <div id="ppdTable"></div>`;
+   <div id="ppdTable"></div>
+   <div class="callout" style="margin-top:16px"><b>Nota.</b> Cadangan anda dihantar kepada Admin JPN untuk kelulusan — status rasmi hanya berubah selepas diluluskan. No. Kad Pengenalan tidak dipaparkan atas sebab privasi (Akta 709).</div>`;
   ppdFilter();
 }
 function ppdFilter(){
@@ -1425,13 +1500,52 @@ function ppdFilter(){
   const c=document.getElementById('ppdTable');
   if(!rows.length){c.innerHTML='<div class="empty">Tiada rekod.</div>';return;}
   c.innerHTML=`<div class="dwrap"><table class="dtable">
-    <thead><tr><th>Sekolah</th><th>Guru Data</th><th>Surat</th><th>Status</th><th>Kemas kini</th></tr></thead>
+    <thead><tr><th>Sekolah</th><th>Guru Data</th><th>Surat</th><th>Status</th><th>Cadangan</th><th>Tindakan</th></tr></thead>
     <tbody>${rows.map(r=>{const st=r.status||'Belum Hantar';return `<tr>
       <td><b>${esc(r.namaSekolah||r.kod)}</b><br><span style="font-family:var(--mono);font-size:11px">${esc(r.kod)}</span></td>
       <td>${esc(r.nama||'—')}</td>
       <td>${r.ada==='Ya'?'<span class="st st-selesai">Ada</span>':'<span class="st st-belum">Belum</span>'}</td>
       <td><span class="st ${statusClass(st)}">${st}</span></td>
-      <td>${esc(r.tarikhKemas||'—')}</td></tr>`;}).join('')}</tbody></table></div>`;
+      <td>${r.cadangStatus?`<span class="st st-tunggu">⏳ ${esc(r.cadangStatus)}</span>`:'<span style="color:var(--muted)">—</span>'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn-reset" onclick="openPpdDetail('${esc(r.kod)}')">Semak</button>
+        <button class="btn-reset" style="margin-left:5px" onclick="resetPin('guru','${esc(r.kod)}',this)">Reset PIN</button>
+      </td></tr>`;}).join('')}</tbody></table></div>`;
+}
+/* PPD/JU: semak & cadang status */
+function openPpdDetail(kod){
+  const r=(window._ppd||[]).find(x=>String(x.kod)===String(kod)); if(!r)return;
+  const st=r.status||'Belum Hantar';
+  openUx(`
+    <h3>${esc(r.namaSekolah||r.kod)}</h3>
+    <p style="font-family:var(--mono);font-size:12px">${esc(r.kod)}</p>
+    <dl class="kv">
+      <dt>Guru Data</dt><dd>${esc(r.nama)||'—'}</dd>
+      <dt>Gred</dt><dd>${esc(r.gred)||'—'}</dd>
+      <dt>Tarikh dilantik</dt><dd>${esc(r.tarikh)||'—'}</dd>
+      <dt>Surat sedia ada</dt><dd>${r.ada==='Ya'?('Ada'+(r.noSurat?' · '+esc(r.noSurat):'')):'Belum ada'}</dd>
+      <dt>Status rasmi</dt><dd><span class="st ${statusClass(st)}">${st}</span></dd>
+    </dl>
+    <h4 style="font-family:var(--disp);font-size:15px;color:var(--navy);margin-bottom:7px">Catatan Guru Data</h4>
+    <div class="note-box ${r.catatan?'':'empty'}">${r.catatan?esc(r.catatan):'Tiada catatan diberikan.'}</div>
+    ${r.cadangStatus?`<div class="callout"><b>Cadangan sedia ada:</b> ${esc(r.cadangStatus)} — oleh ${esc(r.cadangOleh)} (${esc(r.tarikhCadang)}). Menunggu kelulusan JPN.</div>`:''}
+    <h4 style="font-family:var(--disp);font-size:15px;color:var(--navy);margin:16px 0 7px">Cadangan kepada JPN</h4>
+    <div class="fld" style="margin-bottom:12px"><label>Cadang status</label>
+      <select id="cdSt">${STATUSES.map(s=>`<option${s===(r.cadangStatus||st)?' selected':''}>${s}</option>`).join('')}</select>
+    </div>
+    <div class="fld"><label>Catatan/justifikasi</label><textarea id="cdCat" placeholder="Cth: Butiran telah disemak & disahkan betul.">${esc(r.cadangCatatan||'')}</textarea></div>
+    <div class="msg" id="cdMsg"></div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="hantarCadangan('${esc(r.kod)}',this)">Hantar cadangan</button>
+      <button class="btn-sm ghost" onclick="closeUx()">Tutup</button>
+    </div>`);
+}
+async function hantarCadangan(kod, btn){
+  btn.disabled=true; btn.textContent='Menghantar…';
+  try{
+    await api('cadangStatus',{token:AUTH.token,kod:kod,cadangStatus:val('cdSt'),cadangCatatan:val('cdCat')});
+    closeUx(); alert('Cadangan dihantar kepada Admin JPN untuk kelulusan.'); loadPPD();
+  }catch(e){ document.getElementById('cdMsg').textContent=e.message; btn.disabled=false; btn.textContent='Hantar cadangan'; }
 }
 
 /* ================= MODAL SERBAGUNA ================= */
@@ -1461,6 +1575,18 @@ function openLantikanDetail(kod){
     </dl>
     <h4 style="font-family:var(--disp);font-size:15px;color:var(--navy);margin-bottom:7px">Catatan daripada Guru Data</h4>
     <div class="note-box ${r.catatan?'':'empty'}">${r.catatan?esc(r.catatan):'Tiada catatan diberikan.'}</div>
+    ${r.cadangStatus?`
+      <div class="callout" style="border-left-color:var(--warn);background:#fdf5e6">
+        <b>⏳ Cadangan menunggu kelulusan</b><br>
+        Cadang status: <b>${esc(r.cadangStatus)}</b><br>
+        Oleh: ${esc(r.cadangOleh)} · ${esc(r.tarikhCadang)}
+        ${r.cadangCatatan?`<br><span style="display:block;margin-top:6px;white-space:pre-wrap">"${esc(r.cadangCatatan)}"</span>`:''}
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn-sm" onclick="prosesCadangan('${esc(r.kod)}',true,this)">✓ Terima cadangan</button>
+          <button class="btn-sm ghost" onclick="prosesCadangan('${esc(r.kod)}',false,this)">✕ Tolak</button>
+        </div>
+      </div>`:''}
+    ${r.dikemasOleh?`<p style="font-size:11.5px;color:var(--muted);margin-bottom:12px">Kemas kini terakhir oleh: ${esc(r.dikemasOleh)}</p>`:''}
     <h4 style="font-family:var(--disp);font-size:15px;color:var(--navy);margin-bottom:7px">Maklum balas JPN</h4>
     <div class="fld"><textarea id="adCat" placeholder="Cth: Sila betulkan ejaan nama / No. KP tidak sepadan…">${esc(r.adminCatatan||'')}</textarea></div>
     <div class="fld" style="margin-top:12px"><label>Tukar status</label>
@@ -1472,6 +1598,17 @@ function openLantikanDetail(kod){
       <button class="btn-sm ghost" onclick="closeUx()">Tutup</button>
     </div>`);
 }
+async function prosesCadangan(kod, terima, btn){
+  if(!terima && !confirm('Tolak cadangan ini? Cadangan akan dibuang tanpa mengubah status.'))return;
+  btn.disabled=true; btn.textContent='…';
+  try{
+    await api('terimaCadangan',{token:AUTH.token,kod:kod,terima:!!terima});
+    closeUx();
+    ADMIN_DATA=null; await loadAdmin();       // muat semula data terkini
+    alert(terima?'Cadangan diterima. Status telah dikemas kini.':'Cadangan ditolak.');
+  }catch(e){ alert('Gagal: '+e.message); btn.disabled=false; btn.textContent=terima?'✓ Terima cadangan':'✕ Tolak'; }
+}
+
 async function simpanDetail(kod, btn){
   const status=val('adSt'), adminCatatan=val('adCat');
   btn.disabled=true; btn.textContent='Menyimpan…';
