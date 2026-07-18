@@ -1061,13 +1061,14 @@ document.getElementById('ovInput').addEventListener('input',runSearch);
 
 /* ================= BACKEND & AUTH ================= */
 /* Tampal URL Web App GAS (/exec) di bawah selepas deploy backend: */
-const API = 'https://script.google.com/macros/s/AKfycbyG5zIGAp9YXoao2rifq-sJsTaUjOuRNM-7JASnZEJmqo_x1Kft2j5OIiRCYPSrVo7K/exec';
+const API = 'https://script.google.com/macros/s/AKfycbyWGM_x-HmdGMhhx86SUNgcih0-5WfmuZo8P9JxAOa4_mHlkbmXMniLg0Co8h4CXkY/exec';
 
 let AUTH = null;        // {token, role, id, nama, kodPPD, namaPPD, namaSekolah}
 let curRole = 'guru';
 const STATUSES = ['Belum Hantar','Menunggu Semakan','Sedang Diproses','Selesai','Perlu Pembetulan'];
 function statusClass(s){return {'Belum Hantar':'st-belum','Menunggu Semakan':'st-tunggu','Sedang Diproses':'st-proses','Selesai':'st-selesai','Perlu Pembetulan':'st-betul'}[s]||'st-belum';}
 function val(id){const el=document.getElementById(id);return el?el.value:'';}
+function tarikhInput(v){ if(!v)return ''; const m=String(v).match(/^(\d{4})-(\d{2})-(\d{2})/); return m?m[0]:''; }
 function offlineCard(msg){
   msg = msg || '';
   const luarTalian = !navigator.onLine || /failed to fetch|networkerror|load failed|belum ditetapkan/i.test(msg);
@@ -1214,7 +1215,7 @@ function renderLantikanForm(rec){
        <div class="fld"><label>Nama Penuh Guru Data *</label><input id="lkNama" value="${esc(rec.nama||'')}" placeholder="Nama seperti dalam KP"></div>
        <div class="fld"><label>No. Kad Pengenalan *</label><input id="lkKP" value="${esc(rec.kp||'')}" placeholder="cth: 880101015123"></div>
        <div class="fld"><label>Gred / Jawatan</label><input id="lkGred" value="${esc(rec.gred||'')}" placeholder="cth: DG44"></div>
-       <div class="fld"><label>Tarikh Dilantik sebagai Guru Data</label><input id="lkTarikh" type="date" value="${esc(rec.tarikh||'')}"></div>
+       <div class="fld"><label>Tarikh Dilantik sebagai Guru Data</label><input id="lkTarikh" type="date" value="${esc(tarikhInput(rec.tarikh))}"></div>
        <div class="fld"><label>Sudah ada Surat Lantikan?</label><select id="lkAda"><option value="Tidak"${rec.ada==='Tidak'?' selected':''}>Belum ada</option><option value="Ya"${rec.ada==='Ya'?' selected':''}>Sudah ada</option></select></div>
        <div class="fld"><label>No. Surat Lantikan (jika ada)</label><input id="lkNoSurat" value="${esc(rec.noSurat||'')}" placeholder="Kosongkan jika belum ada"></div>
        <div class="fld"><label>Jumlah Waktu Mengajar (seminggu)</label><input id="lkJW" type="number" min="0" value="${esc(rec.jumlahWaktu!=null?rec.jumlahWaktu:'')}" placeholder="cth: 24"></div>
