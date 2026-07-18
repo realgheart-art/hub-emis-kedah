@@ -1366,6 +1366,7 @@ function renderAdminPane(){
   if(ADMIN_TAB==='sekolah'){
     const ppds=[...new Set(ADMIN_DATA.map(r=>r.namaPPD).filter(Boolean))].sort();
     pane.innerHTML=`<div class="facts" id="adminFacts"></div>
+     <div id="adminWaktu">${waktuPanel(ADMIN_DATA,'admin')}</div>
      <div class="toolbar">
        <select id="fPPD" onchange="renderAdminTable()"><option value="">Semua PPD</option>${ppds.map(p=>`<option>${esc(p)}</option>`).join('')}</select>
        <select id="fStatus" onchange="renderAdminTable()"><option value="">Semua status</option>${STATUSES.map(s=>`<option>${s}</option>`).join('')}</select>
@@ -1544,13 +1545,14 @@ function adminFiltered(){
     if(fs&&(r.status||'Belum Hantar')!==fs)return false;
     if(fsu){ const ada = (r.ada==='Ya') ? 'Ya' : 'Tidak'; if(ada!==fsu)return false; }
     if(CADANG_ONLY && !r.cadangStatus) return false;
+    if(WAKTU_ONLY){ const n=Number(r.jumlahWaktu); if(!(r.jumlahWaktu!==''&&r.jumlahWaktu!=null&&!isNaN(n)&&n>AMBANG_WAKTU)) return false; }
     if(fq){const h=(r.kod+' '+(r.namaSekolah||'')+' '+(r.nama||'')+' '+(r.kp||'')).toLowerCase();if(h.indexOf(fq)<0)return false;}
     return true;
   });
 }
 function resetFilter(){
   ['fPPD','fStatus','fSurat','fQ'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
-  CADANG_ONLY=false;
+  CADANG_ONLY=false; WAKTU_ONLY=false;
   renderAdminTable();
 }
 function renderAdminFacts(rows){
@@ -1584,7 +1586,7 @@ function renderAdminTable(){
   renderAdminFacts(rows);
   if(!rows.length){c.innerHTML='<div class="empty">Tiada rekod sepadan.</div>';return;}
   c.innerHTML=`<div class="dwrap"><table class="dtable">
-    <thead><tr><th>Sekolah</th><th>PPD</th><th>Guru Data</th><th>No. KP</th><th>Gred</th><th>Surat</th><th>Status</th><th>Catatan</th><th>PIN</th></tr></thead>
+    <thead><tr><th>Sekolah</th><th>PPD</th><th>Guru Data</th><th>No. KP</th><th>Gred</th><th>Waktu</th><th>Jadual</th><th>Surat</th><th>Status</th><th>Catatan</th><th>PIN</th></tr></thead>
     <tbody>${rows.map(r=>{const st=r.status||'Belum Hantar';
       return `<tr>
         <td><b>${esc(r.namaSekolah||r.kod)}</b><br><span style="font-family:var(--mono);font-size:11px">${esc(r.kod)}</span></td>
@@ -1592,6 +1594,8 @@ function renderAdminTable(){
         <td>${esc(r.nama||'—')}</td>
         <td>${esc(r.kp||'—')}</td>
         <td>${esc(r.gred||'—')}</td>
+        <td>${selWaktu(r)}</td>
+        <td>${ikonJadual(r)}</td>
         <td>${r.adaSuratFail?'<span class="st st-selesai">📄 Surat</span>':(r.ada==='Ya'?'<span class="st st-selesai">Ada</span>':'<span class="st st-belum">Belum</span>')}</td>
         <td>${st==='Belum Hantar'?'<span class="st st-belum">Belum Hantar</span>':`<select class="stsel" data-kod="${esc(r.kod)}" onchange="updateStatus(this)">${['Menunggu Semakan','Sedang Diproses','Selesai','Perlu Pembetulan'].map(s=>`<option${s===st?' selected':''}>${s}</option>`).join('')}</select>`}</td>
         <td><button class="btn-reset" ${r.cadangStatus?'style="background:#fdf5e6;border-color:#e8c98a;color:#96652b;font-weight:700"':''} onclick="openLantikanDetail('${esc(r.kod)}')">${r.cadangStatus?'⏳ Cadangan':(r.catatan?'📝 Lihat':'Lihat')}</button></td>
@@ -1631,8 +1635,8 @@ async function updateStatus(sel){
 }
 function exportCSV(){
   const rows=adminFiltered();
-  const head=['Kod Sekolah','Nama Sekolah','PPD','Nama Guru Data','No KP','Gred','Tarikh Dilantik','Ada Surat','No Surat','Status','Catatan Guru Data','Maklum Balas JPN','Tarikh Kemas'];
-  const body=rows.map(r=>[r.kod,r.namaSekolah,r.namaPPD,r.nama,r.kp,r.gred,r.tarikh,r.ada,r.noSurat,r.status,r.catatan,r.adminCatatan,r.tarikhKemas].map(csvCell).join(','));
+  const head=['Kod Sekolah','Nama Sekolah','PPD','Nama Guru Data','No KP','Gred','Tarikh Dilantik','Jumlah Waktu Mengajar','Ada Surat','No Surat','Status','Catatan Guru Data','Maklum Balas JPN','Tarikh Kemas'];
+  const body=rows.map(r=>[r.kod,r.namaSekolah,r.namaPPD,r.nama,r.kp,r.gred,r.tarikh,r.jumlahWaktu,r.ada,r.noSurat,r.status,r.catatan,r.adminCatatan,r.tarikhKemas].map(csvCell).join(','));
   const csv=[head.join(',')].concat(body).join('\n');
   const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='surat-lantikan-guru-data.csv'; a.click();
@@ -1660,6 +1664,7 @@ function renderPPD(rows){
      <div class="fact fact-belum"><b>${cadang}</b><span>Cadangan menunggu JPN</span></div>
    </div>
    <div class="toolbar"><input id="pQ" placeholder="Cari sekolah / nama…" oninput="ppdFilter()"></div>
+   <div id="ppdWaktu">${waktuPanel(rows,'ppd')}</div>
    <div id="ppdTable"></div>
    <div class="callout" style="margin-top:16px"><b>Nota.</b> Cadangan anda dihantar kepada Admin JPN untuk kelulusan — status rasmi hanya berubah selepas diluluskan. No. Kad Pengenalan tidak dipaparkan atas sebab privasi (Akta 709).</div>`;
   ppdFilter();
@@ -1667,13 +1672,16 @@ function renderPPD(rows){
 function ppdFilter(){
   const q=(val('pQ')||'').toLowerCase(); let rows=window._ppd||[];
   if(q)rows=rows.filter(r=>(r.kod+' '+(r.namaSekolah||'')+' '+(r.nama||'')).toLowerCase().indexOf(q)>=0);
+  if(WAKTU_ONLY)rows=rows.filter(r=>{const n=Number(r.jumlahWaktu);return r.jumlahWaktu!==''&&r.jumlahWaktu!=null&&!isNaN(n)&&n>AMBANG_WAKTU;});
   const c=document.getElementById('ppdTable');
   if(!rows.length){c.innerHTML='<div class="empty">Tiada rekod.</div>';return;}
   c.innerHTML=`<div class="dwrap"><table class="dtable">
-    <thead><tr><th>Sekolah</th><th>Guru Data</th><th>Surat</th><th>Status</th><th>Cadangan</th><th>Tindakan</th></tr></thead>
+    <thead><tr><th>Sekolah</th><th>Guru Data</th><th>Waktu</th><th>Jadual</th><th>Surat</th><th>Status</th><th>Cadangan</th><th>Tindakan</th></tr></thead>
     <tbody>${rows.map(r=>{const st=r.status||'Belum Hantar';return `<tr>
       <td><b>${esc(r.namaSekolah||r.kod)}</b><br><span style="font-family:var(--mono);font-size:11px">${esc(r.kod)}</span></td>
       <td>${esc(r.nama||'—')}</td>
+      <td>${selWaktu(r)}</td>
+      <td>${ikonJadual(r)}</td>
       <td>${r.ada==='Ya'?'<span class="st st-selesai">Ada</span>':'<span class="st st-belum">Belum</span>'}</td>
       <td><span class="st ${statusClass(st)}">${st}</span></td>
       <td>${r.cadangStatus?`<span class="st st-tunggu">⏳ ${esc(r.cadangStatus)}</span>`:'<span style="color:var(--muted)">—</span>'}</td>
@@ -1890,6 +1898,74 @@ async function padamBahan(id){
   if(!confirm('Padam bahan ini? Tindakan ini tidak boleh dibatalkan.'))return;
   try{ await api('deleteBahan',{token:AUTH.token,id:id}); closeUx(); BAHAN=null; await loadBahan(); if(ADMIN_TAB==='bahan')renderAdminPane(); }
   catch(e){ alert('Gagal padam: '+e.message); }
+}
+
+/* ================= ANALITIK WAKTU MENGAJAR ================= */
+let AMBANG_WAKTU = Number(localStorage.getItem('emis_ambang')||16);
+let WAKTU_ONLY = false;   // tapis: hanya yang melebihi ambang
+
+function bilWaktu(rows){ return rows.filter(r=>r.jumlahWaktu!==''&&r.jumlahWaktu!=null&&!isNaN(Number(r.jumlahWaktu))).map(r=>Number(r.jumlahWaktu)); }
+
+// Panel ringkasan + carta pengagihan. scope = 'admin' | 'ppd'
+function waktuPanel(rows, scope){
+  const w = bilWaktu(rows);
+  const isiJW = w.length;
+  const belumJW = rows.length - isiJW;
+  const purata = isiJW ? (w.reduce((a,b)=>a+b,0)/isiJW) : 0;
+  const maks = isiJW ? Math.max(...w) : 0;
+  const melebihi = w.filter(x=>x>AMBANG_WAKTU).length;
+  // julat pengagihan
+  const julat = [[0,10,'1–10'],[11,16,'11–16'],[17,24,'17–24'],[25,999,'25+']];
+  const kira = julat.map(j=> w.filter(x=>x>=j[0]&&x<=j[1]).length );
+  const maxBar = Math.max(1, ...kira);
+  const bars = julat.map((j,i)=>{
+    const tinggi = Math.round((kira[i]/maxBar)*120);
+    const tinggiJulat = j[0]>AMBANG_WAKTU;   // seluruh julat melebihi ambang
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1">
+      <div style="font-size:12px;font-weight:700;color:var(--navy)">${kira[i]}</div>
+      <div style="width:70%;max-width:54px;height:${Math.max(tinggi,3)}px;border-radius:6px 6px 0 0;background:${tinggiJulat?'linear-gradient(var(--danger),#c96a4f)':'linear-gradient(var(--navy-3),var(--navy))'}"></div>
+      <div style="font-size:11px;color:var(--ink-soft);text-align:center">${j[2]}</div>
+    </div>`;
+  }).join('');
+  return `
+   <div class="facts" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+     <div class="fact"><b>${isiJW}</b><span>Ada data waktu</span></div>
+     <div class="fact"><b>${purata?purata.toFixed(1):'—'}</b><span>Purata waktu/minggu</span></div>
+     <div class="fact"><b>${maks||'—'}</b><span>Waktu tertinggi</span></div>
+     <div class="fact fact-belum" style="cursor:pointer" onclick="toggleWaktuOnly('${scope}')"><b>${melebihi}</b><span>Melebihi ${AMBANG_WAKTU} waktu ${WAKTU_ONLY?'✓':''}</span></div>
+   </div>
+   <div class="card" style="margin-top:2px">
+     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+       <h3 style="margin:0">Pengagihan Waktu Mengajar</h3>
+       <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft)">
+         <label for="ambangInput">Ambang tinggi:</label>
+         <input id="ambangInput" type="number" min="1" value="${AMBANG_WAKTU}" style="width:70px;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px" onchange="setAmbang(this.value,'${scope}')">
+         <span>waktu</span>
+       </div>
+     </div>
+     <div style="display:flex;align-items:flex-end;gap:8px;height:150px;padding:0 4px">${bars}</div>
+     ${belumJW?`<p style="font-size:12px;color:var(--muted);margin-top:12px">${belumJW} Guru Data belum mengisi jumlah waktu mengajar.</p>`:''}
+     <p style="font-size:11.5px;color:var(--muted);margin-top:6px"><span style="display:inline-block;width:10px;height:10px;background:var(--danger);border-radius:2px;vertical-align:-1px"></span> Bar merah = julat melebihi ambang ${AMBANG_WAKTU} waktu.</p>
+   </div>`;
+}
+function setAmbang(v, scope){
+  const n=Number(v); if(isNaN(n)||n<1)return;
+  AMBANG_WAKTU=n; localStorage.setItem('emis_ambang',String(n));
+  if(scope==='admin')renderAdminPane(); else loadPPD();
+}
+function toggleWaktuOnly(scope){
+  WAKTU_ONLY=!WAKTU_ONLY;
+  if(scope==='admin')renderAdminTable(); else ppdFilter();
+}
+function ikonJadual(r){
+  if(!r.adaJadual) return '<span style="color:var(--muted)">—</span>';
+  return `<button class="btn-reset" title="Lihat jadual waktu" onclick="muatTurunJadual('${esc(r.kod)}',this)">📅 Jadual</button>`;
+}
+function selWaktu(r){
+  if(r.jumlahWaktu===''||r.jumlahWaktu==null) return '<span style="color:var(--muted)">—</span>';
+  const n=Number(r.jumlahWaktu);
+  const tinggi=n>AMBANG_WAKTU;
+  return `<b style="color:${tinggi?'var(--danger)':'var(--ink)'}">${esc(r.jumlahWaktu)}</b>${tinggi?' <span class="st st-betul" style="padding:2px 7px">tinggi</span>':''}`;
 }
 
 /* delegated navigation for role cards */
