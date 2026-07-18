@@ -1217,17 +1217,17 @@ function renderLantikanForm(rec){
        <div class="fld"><label>Tarikh Dilantik sebagai Guru Data</label><input id="lkTarikh" type="date" value="${esc(rec.tarikh||'')}"></div>
        <div class="fld"><label>Sudah ada Surat Lantikan?</label><select id="lkAda"><option value="Tidak"${rec.ada==='Tidak'?' selected':''}>Belum ada</option><option value="Ya"${rec.ada==='Ya'?' selected':''}>Sudah ada</option></select></div>
        <div class="fld"><label>No. Surat Lantikan (jika ada)</label><input id="lkNoSurat" value="${esc(rec.noSurat||'')}" placeholder="Kosongkan jika belum ada"></div>
-       <div class="fld"><label>Jumlah Waktu Mengajar (seminggu) *</label><input id="lkJW" type="number" min="0" value="${esc(rec.jumlahWaktu!=null?rec.jumlahWaktu:'')}" placeholder="cth: 24"></div>
+       <div class="fld"><label>Jumlah Waktu Mengajar (seminggu)</label><input id="lkJW" type="number" min="0" value="${esc(rec.jumlahWaktu!=null?rec.jumlahWaktu:'')}" placeholder="cth: 24"></div>
        <div class="fld full"><label>Catatan</label><textarea id="lkCatatan" placeholder="Sebarang maklumat tambahan…">${esc(rec.catatan||'')}</textarea></div>
      </div>
      <div style="margin-top:16px;padding:14px 16px;border:1px dashed var(--line-strong);border-radius:12px;background:var(--paper-2)">
-       <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px">Jadual Waktu * (PDF / JPEG / PNG, maks 8MB)</div>
+       <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px">Jadual Waktu (PDF / JPEG / PNG, maks 8MB)</div>
        ${rec.adaJadual?`<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
           <span class="st st-selesai">✓ Jadual telah dimuat naik${rec.jadualTarikh?' · '+esc(rec.jadualTarikh):''}</span>
           <button class="btn-sm ghost" onclick="muatTurunJadual('${esc(AUTH.id)}',this)">Lihat</button>
           <button class="btn-sm ghost" onclick="pilihJadual()">Ganti</button>
         </div>`:`<button class="btn-sm" onclick="pilihJadual()">⤴ Muat naik Jadual Waktu</button>
-        <div style="font-size:12px;color:var(--danger);margin-top:8px">Wajib dimuat naik sebelum boleh menghantar.</div>`}
+        <div style="font-size:12px;color:var(--ink-soft);margin-top:8px">Pilihan — boleh dimuat naik sekarang atau kemudian.</div>`}
        <div id="jadualBusy" style="font-size:12.5px;color:var(--brass-deep);margin-top:8px"></div>
      </div>
      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
