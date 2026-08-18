@@ -336,6 +336,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .st-proses{color:#2b5f8a;background:#eaf3fb;border-color:#a9cbe8}
 .st-selesai{color:#3f7d54;background:#eaf5ee;border-color:#a9d6ba}
 .st-betul{color:#a8492f;background:#fbece7;border-color:#e6b3a3}
+.alert-hantar{display:flex;align-items:center;gap:14px;border-radius:var(--r);padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow);forced-color-adjust:none}
+.alert-hantar .ah-icon{font-size:24px;flex-shrink:0}
+.alert-hantar .ah-title{font-family:var(--disp);font-weight:600;font-size:16px;margin-bottom:3px}
+.alert-hantar .ah-sub{font-size:13px;line-height:1.5}
+.alert-warn{background:#fdf3e3;border:1px solid #e8c98a;color:#7a5618}
+.alert-warn .ah-title{color:#8a5a10}
+.alert-ok{background:#eef7f0;border:1px solid #bfe0c8;color:#2f6b45}
+.alert-ok .ah-title{color:#2f6b45}
 .status-banner{display:flex;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
 .status-banner .lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600}
 .status-banner h3{font-family:var(--disp);font-weight:600;font-size:17px;color:var(--navy);margin-top:2px}
@@ -1201,7 +1209,22 @@ async function loadMyLantikan(){
 }
 function renderLantikanForm(rec){
   rec=rec||{}; const status=rec.status||'Belum Hantar';
+  const belumHantar = (status==='Belum Hantar');
   document.getElementById('lantikanBody').innerHTML=`
+   ${belumHantar?`<div class="alert-hantar alert-warn">
+     <div class="ah-icon">⚠️</div>
+     <div style="flex:1">
+       <div class="ah-title">Anda belum menghantar Surat Lantikan</div>
+       <div class="ah-sub">Log masuk sahaja tidak mencukupi. Sila lengkapkan borang di bawah dan tekan <b>“Hantar untuk Semakan”</b> supaya rekod anda sampai kepada JPN.</div>
+     </div>
+     <button class="btn-sm" onclick="document.getElementById('lkNama').focus();document.getElementById('lkNama').scrollIntoView({behavior:'smooth',block:'center'})">Isi borang sekarang</button>
+   </div>`:`<div class="alert-hantar alert-ok">
+     <div class="ah-icon">✓</div>
+     <div style="flex:1">
+       <div class="ah-title">Surat Lantikan anda telah dihantar</div>
+       <div class="ah-sub">Status semasa: <b>${esc(status)}</b>. Anda boleh mengemas kini butiran di bawah bila-bila masa jika perlu.</div>
+     </div>
+   </div>`}
    <div class="status-banner"><div style="flex:1"><div class="lbl">Status permohonan</div><h3>${esc(AUTH.namaSekolah||AUTH.id)}</h3></div><span class="st ${statusClass(status)}">${status}</span></div>
    ${rec.adaSuratFail?`<div class="callout" style="border-left-color:var(--ok);background:#eef7f0;display:flex;flex-wrap:wrap;align-items:center;gap:12px">
      <div style="flex:1;min-width:180px"><b>Surat Lantikan anda telah tersedia.</b><br><span style="font-size:12.5px;color:var(--ink-soft)">Dimuat naik oleh JPN${rec.suratTarikh?' · '+esc(rec.suratTarikh):''}</span></div>
