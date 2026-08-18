@@ -1608,6 +1608,7 @@ function tapisSurat(v){
 function renderAdminTable(){
   const rows=adminFiltered(), c=document.getElementById('adminTable');
   renderAdminFacts(rows);
+  const wpanel=document.getElementById('adminWaktu'); if(wpanel) wpanel.innerHTML=waktuPanel(rows,'admin');
   if(!rows.length){c.innerHTML='<div class="empty">Tiada rekod sepadan.</div>';return;}
   c.innerHTML=`<div class="dwrap"><table class="dtable">
     <thead><tr><th>Sekolah</th><th>PPD</th><th>Guru Data</th><th>No. KP</th><th>Gred</th><th>Waktu</th><th>Jadual</th><th>Surat</th><th>Status</th><th>Catatan</th><th>PIN</th></tr></thead>
@@ -1975,7 +1976,11 @@ function waktuPanel(rows, scope){
 function setAmbang(v, scope){
   const n=Number(v); if(isNaN(n)||n<1)return;
   AMBANG_WAKTU=n; localStorage.setItem('emis_ambang',String(n));
-  if(scope==='admin')renderAdminPane(); else loadPPD();
+  if(scope==='admin'){ renderAdminTable(); }
+  else {
+    const wp=document.getElementById('ppdWaktu'); if(wp) wp.innerHTML=waktuPanel(window._ppd||[],'ppd');
+    ppdFilter();
+  }
 }
 function toggleWaktuOnly(scope){
   WAKTU_ONLY=!WAKTU_ONLY;
